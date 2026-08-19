@@ -46,7 +46,7 @@ text.
 | R | Preferred Contact | ✅ | |
 | S | Rental/2nd Property | ✅ | |
 | T | In-District Attest | ✅ | |
-| U | Placement Notes | ✅ (resident's text; script appends `⚠ 5 digits on vertical` here when that condition is true — see CONTRACT §3) | |
+| U | Placement Notes | ✅ (resident's text, verbatim) | |
 | V | Est Signs+Hardware $ | ✅ | |
 | W | Donation Pledged $ | ✅ | |
 | X | Est Total Due $ | ✅ | |
@@ -156,12 +156,23 @@ call
 email
 ```
 
-**Arrow Direction** (Orders col J — dept-filled, free but should stay closed)
+**Arrow Direction** (Orders col J — dept-filled)
 ```
 Left
 Right
+Up
+Down
+Diagonal Top Left
+Diagonal Top Right
+Diagonal Bottom Left
+Diagonal Bottom Right
 (blank = not yet decided — do not place the vendor order for an
  arrow-sign row until this is set)
+
+Note: product 49977 has TWO arrow settings. This column records which way
+the arrow POINTS. The arrow's PLACEMENT (which side of the sign it sits on)
+is chosen on the vendor page via the color list, which is doubled into
+"LEFT ARROW - Green" and "RIGHT ARROW - Green". See RUNBOOK.md.
 ```
 
 **Donation Choice** (used to compute col W, not stored verbatim)
@@ -282,14 +293,14 @@ LET(
   arrowBlock, IF(arrowFlag="Yes",
     "ARROW SIGN — HORIZONTAL 18x6 BORDERED (product 49977)"&CHAR(10)&
     "URL: https://www.trafficsign.com/search?q=49977"&CHAR(10)&
-    "Color: Green"&CHAR(10)&
+    "Color: pick the GREEN entry on the correct side — the color list is doubled into LEFT ARROW / RIGHT ARROW"&CHAR(10)&
     "Characters: "&house&CHAR(10)&
     "Character size: 4 in"&CHAR(10)&
     "Material: Diamond Grade, .063 in aluminum"&CHAR(10)&
     "Sides: SINGLE-SIDED"&CHAR(10)&
     "Holes: No Holes"&CHAR(10)&
     "Anti-graffiti film: NO"&CHAR(10)&
-    "Arrow direction: "&IF(TRIM(arrowDir)="","SET DIRECTION FIRST — do not order yet",arrowDir)&CHAR(10)&
+    "Arrow (separate control from color): "&IF(TRIM(arrowDir)="","SET DIRECTION FIRST — do not order yet",arrowDir)&CHAR(10)&
     "Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents",
     ""
   ),
@@ -301,7 +312,7 @@ Single-line version (paste this directly into the formula bar if multi-line
 entry isn't available in your Sheets version):
 
 ```
-=IF($A2="","",LET(ori,$D2,house,$B2,color,$C2,markersRaw,$E2,arrowFlag,$F2,arrowDir,$G2,postInc,$H2,prodLabel,IF(color="yellow",IF(ori="v","VERTICAL 6x18 — NO-BORDER YELLOW (product 8349)","HORIZONTAL 18x6 — NO-BORDER YELLOW (product 8348)"),IF(ori="v","VERTICAL 6x18 (product 49961)","HORIZONTAL 18x6 (product 49965)")),prodSearchUrl,IF(color="yellow",IF(ori="v","https://www.trafficsign.com/search?q=8349","https://www.trafficsign.com/search?q=8348"),IF(ori="v","https://www.trafficsign.com/search?q=49961","https://www.trafficsign.com/search?q=49965")),bracketNote,"Bracket: add matching "&IF(ori="v","vertical","horizontal")&" mounting bracket",postNote,IF(postInc="Yes",CHAR(10)&"Post: add matching sign post",""),charWarn,IF(AND(ori="v",LEN(house)>4),CHAR(10)&"⚠ "&LEN(house)&" chars on a 4-char vertical product (49961) — confirm with resident / consider horizontal 49965 BEFORE ordering",""),mainBlock,"MAIN SIGN — "&prodLabel&CHAR(10)&"URL: "&prodSearchUrl&CHAR(10)&"Color: "&color&CHAR(10)&"Characters: "&house&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: Double-sided"&CHAR(10)&"Holes: No Holes (centered text)"&CHAR(10)&"Anti-graffiti film: NO — do not add"&CHAR(10)&bracketNote&postNote&charWarn&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents",markerList,IF(TRIM(markersRaw)="","",TEXTJOIN(CHAR(10)&CHAR(10),TRUE,ARRAYFORMULA("MARKER — VERTICAL 6x18 (product 49961)"&CHAR(10)&"URL: https://www.trafficsign.com/search?q=49961"&CHAR(10)&"Color: Blue"&CHAR(10)&"Characters: "&TRIM(SPLIT(markersRaw,","))&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: Double-sided"&CHAR(10)&"Holes: No Holes"&CHAR(10)&"Anti-graffiti film: NO"&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents")),arrowBlock,IF(arrowFlag="Yes","ARROW SIGN — HORIZONTAL 18x6 BORDERED (product 49977)"&CHAR(10)&"URL: https://www.trafficsign.com/search?q=49977"&CHAR(10)&"Color: Green"&CHAR(10)&"Characters: "&house&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: SINGLE-SIDED"&CHAR(10)&"Holes: No Holes"&CHAR(10)&"Anti-graffiti film: NO"&CHAR(10)&"Arrow direction: "&IF(TRIM(arrowDir)="","SET DIRECTION FIRST — do not order yet",arrowDir)&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents",""),TEXTJOIN(CHAR(10)&CHAR(10)&"---"&CHAR(10)&CHAR(10),TRUE,mainBlock,markerList,arrowBlock)))
+=IF($A2="","",LET(ori,$D2,house,$B2,color,$C2,markersRaw,$E2,arrowFlag,$F2,arrowDir,$G2,postInc,$H2,prodLabel,IF(color="yellow",IF(ori="v","VERTICAL 6x18 — NO-BORDER YELLOW (product 8349)","HORIZONTAL 18x6 — NO-BORDER YELLOW (product 8348)"),IF(ori="v","VERTICAL 6x18 (product 49961)","HORIZONTAL 18x6 (product 49965)")),prodSearchUrl,IF(color="yellow",IF(ori="v","https://www.trafficsign.com/search?q=8349","https://www.trafficsign.com/search?q=8348"),IF(ori="v","https://www.trafficsign.com/search?q=49961","https://www.trafficsign.com/search?q=49965")),bracketNote,"Bracket: add matching "&IF(ori="v","vertical","horizontal")&" mounting bracket",postNote,IF(postInc="Yes",CHAR(10)&"Post: add matching sign post",""),charWarn,IF(AND(ori="v",LEN(house)>4),CHAR(10)&"⚠ "&LEN(house)&" chars on a 4-char vertical product (49961) — confirm with resident / consider horizontal 49965 BEFORE ordering",""),mainBlock,"MAIN SIGN — "&prodLabel&CHAR(10)&"URL: "&prodSearchUrl&CHAR(10)&"Color: "&color&CHAR(10)&"Characters: "&house&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: Double-sided"&CHAR(10)&"Holes: No Holes (centered text)"&CHAR(10)&"Anti-graffiti film: NO — do not add"&CHAR(10)&bracketNote&postNote&charWarn&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents",markerList,IF(TRIM(markersRaw)="","",TEXTJOIN(CHAR(10)&CHAR(10),TRUE,ARRAYFORMULA("MARKER — VERTICAL 6x18 (product 49961)"&CHAR(10)&"URL: https://www.trafficsign.com/search?q=49961"&CHAR(10)&"Color: Blue"&CHAR(10)&"Characters: "&TRIM(SPLIT(markersRaw,","))&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: Double-sided"&CHAR(10)&"Holes: No Holes"&CHAR(10)&"Anti-graffiti film: NO"&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents")),arrowBlock,IF(arrowFlag="Yes","ARROW SIGN — HORIZONTAL 18x6 BORDERED (product 49977)"&CHAR(10)&"URL: https://www.trafficsign.com/search?q=49977"&CHAR(10)&"Color: pick the GREEN entry on the correct side — the color list is doubled into LEFT ARROW / RIGHT ARROW"&CHAR(10)&"Characters: "&house&CHAR(10)&"Character size: 4 in"&CHAR(10)&"Material: Diamond Grade, .063 in aluminum"&CHAR(10)&"Sides: SINGLE-SIDED"&CHAR(10)&"Holes: No Holes"&CHAR(10)&"Anti-graffiti film: NO"&CHAR(10)&"Arrow (separate control from color): "&IF(TRIM(arrowDir)="","SET DIRECTION FIRST — do not order yet",arrowDir)&CHAR(10)&"Order note: SINGLE INDIVIDUAL ORDER — do not combine with other residents",""),TEXTJOIN(CHAR(10)&CHAR(10)&"---"&CHAR(10)&CHAR(10),TRUE,mainBlock,markerList,arrowBlock)))
 ```
 
 Fill I2 down through **I5000 once** (matching the FILTER bound in §4.2) —

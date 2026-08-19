@@ -46,9 +46,6 @@
      donations, paste it between the quotes and it will show on the
      confirmation screen. Leave as "" to hide it.
 
-   - deptName / deptSiteUrl: department name and website shown on
-     the page.
-
    - contactFallback: a phone number or email shown as a backup way
      to reach us if an order can't be confirmed automatically (for
      example "info@yorktownfire.org" or "(914) 555-0100"). Leave as
@@ -61,9 +58,9 @@ window.PORTAL_CONFIG = {
   pricesAsOf: "trafficsign.com prices as of Aug 19, 2026",
   donationTiers: [0, 10, 25, 50],    // "Other" is always appended
   defaultDonation: 25,
-  venmoUrl: "",                      // when non-empty, success panel + copy show the link
+  venmoUrl: "",                      // when non-empty, success panel shows the link
   paypalUrl: "",
-  deptName: "Yorktown Heights Engine Co. No. 1",
-  deptSiteUrl: "https://www.yorktownfire.org",
-  contactFallback: ""                // shown in soft-success/noscript, e.g. an email/phone; "" hides
+  contactFallback: ""                // shown on the "couldn't confirm" panel, e.g. an email/phone; "" hides
+  // Department name and website are written directly into index.html —
+  // they are not settings here.
 };

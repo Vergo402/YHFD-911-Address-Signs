@@ -44,13 +44,13 @@ Per-field inline errors: each field's wrapper may contain `<p class="field-err" 
 window.PORTAL_CONFIG = {
   endpoint: "",                      // Apps Script /exec URL. "" => mock mode. ?mock=1 also forces mock.
   prices: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },  // live vendor prices 2026-08-19 (bracket = Wing Bracket Y3518; post = 8' 1.12lbs/ft green U-channel)
-  pricesAsOf: "placeholder — not yet vendor-confirmed",
+  pricesAsOf: "trafficsign.com prices as of Aug 19, 2026",   // rendered into the price note under the order summary
   donationTiers: [0, 10, 25, 50],    // "Other" is always appended
   defaultDonation: 25,
   venmoUrl: "",                      // when non-empty, success panel + copy show the link
   paypalUrl: "",
-  deptName: "Yorktown Heights Engine Co. No. 1",
-  deptSiteUrl: "https://www.yorktownfire.org",
+  // Department name and site URL live in index.html, not here — a config key
+  // nothing reads is a trap for the volunteer who edits this file.
   contactFallback: ""                // shown in soft-success/noscript, e.g. an email/phone; "" hides
 };
 ```
@@ -65,7 +65,7 @@ window.PORTAL_CONFIG = {
   4. One per marker: `Blue relay marker "{text}", vertical` — `prices.marker`
   5. `Green arrow sign for the split (horizontal, single-sided)` — `prices.arrow` — only if `sharedDriveway`
 - `signsTotal` = sum; `totalDue` = signsTotal + donation (donation ≥ 0).
-- 5-digit + vertical: allowed but shows `digitwarn` (UI) and is flagged in the Sheet row (server appends `⚠ 5 digits on vertical` to Internal Notes).
+- 5-digit + vertical: allowed but shows `digitwarn` (UI) and is flagged in the Sheet row (server appends `⚠ 5-character house number on vertical sign` to Internal Notes).
 
 ## 4. Submission payload (client → doPost, `Content-Type: text/plain;charset=utf-8`, body = JSON string)
 
@@ -146,7 +146,7 @@ Status values: `New`, `Contacted`, `Ordered`, `Installed`, `Paid`.
 
 - Vertical sign: trafficsign.com product **49961** (6×18, 4" chars, DG, .063", double-sided, No Holes, no graffiti film). Max 4 chars at 4".
 - Horizontal sign: product **49965** (18×6, 4" chars, DG, .063", double-sided, No Holes, no film). Max 8 chars at 4".
-- Arrow sign: product **49977** "Horizontal 911 Address Sign with Border – Numbers and Arrow" (18×6, 4" chars, green, DG, .063", **single-sided**, No Holes, no film; $29.98 verified 2026-08-19, SKU X3115-18-SSDG-NH9). Arrow direction is printed at order time (vendor offers left/right/up/down/diagonals) — dept decides pre-order.
+- Arrow sign: product **49977** "Horizontal 911 Address Sign with Border – Numbers and Arrow" (18×6, 4" chars, green, DG, .063", **single-sided**, No Holes, no film; $29.98 verified 2026-08-19, SKU X3115-18-SSDG-NH9). Two arrow settings, both printed at order time and both set by the dept pre-order: **placement side** (bundled into the color control as "LEFT ARROW – Green" / "RIGHT ARROW – Green") and **pointing direction** (separate control: left, right, up, down, 4 diagonals).
 - **Yellow (tier 2) signs**: the bordered family has no yellow — order from the non-border products **8349** (vertical) / **8348** (horizontal), Yellow Reflective with black characters, same spec, same $34.91 (verified 2026-08-19, e.g. SKU X2913-18-DG-NH9 vertical 6×18).
 - Hardware: bracket = **Wing Bracket, Item Y3518** (2⅛×4¼", flag-style, $8.24); post = **8' U-channel, 1.12 lbs/ft, green enamel** ($37.80), both from trafficsign.com's U-channel hardware catalog.
 - Blue markers: product **49961** in blue, text "1000"/"2000"/…

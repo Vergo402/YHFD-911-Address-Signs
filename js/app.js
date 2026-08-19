@@ -227,7 +227,7 @@
       CFG = {
         endpoint: '', prices: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },
         donationTiers: [0, 10, 25, 50], defaultDonation: 25,
-        venmoUrl: '', paypalUrl: '', deptName: '', deptSiteUrl: '', contactFallback: ''
+        venmoUrl: '', paypalUrl: '', pricesAsOf: '', contactFallback: ''
       };
     }
     var PRICES = CFG.prices || {};
@@ -798,6 +798,11 @@
     // ---------------------------------------------------------------------
 
     if (isMockMode()) ensureMockBanner();
+
+    // Show when the price table was last checked, so the note can't silently
+    // claim "current" prices years after anyone verified them.
+    var asOfEl = document.getElementById('pricesasof');
+    if (asOfEl && CFG.pricesAsOf) asOfEl.textContent = ' (' + CFG.pricesAsOf + ')';
 
     var tiers = CFG.donationTiers || [0, 10, 25, 50];
     var initialDonation = tiers.indexOf(CFG.defaultDonation) !== -1

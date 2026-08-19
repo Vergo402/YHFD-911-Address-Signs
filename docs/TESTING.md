@@ -24,7 +24,7 @@ Two-phase test plan: local UI validation with mock mode, then backend curl matri
 | Case | Inputs | Expected Behavior | Notes |
 |---|---|---|---|
 | Vertical, 4 chars | House: 1234, Orient: V, Tier: green | No warning; sign preview shows 4-char vertical | Max 4 chars at 4" on 6×18 |
-| Vertical, 5 chars | House: 12345, Orient: V, Tier: green | Warning: "5 digits on vertical reduces readability at distance; consider horizontal." | UI shows `#digitwarn`; server appends "⚠ 5 digits on vertical" to Internal Notes |
+| Vertical, 5 chars | House: 12345, Orient: V, Tier: green | Warning: "5 digits on vertical reduces readability at distance; consider horizontal." | UI shows `#digitwarn`; server appends "⚠ 5-character house number on vertical sign" to Internal Notes |
 | Horizontal, 8 chars | House: 12345678, Orient: H, Tier: yellow, Length: 200 | No warning; sign shows 8 chars | Max 8 chars at 4" on 18×6; no vertical limit on horizontal |
 | Flip V→H | House: 12345, Orient: V, then H | Warning disappears on flip to H; reappears on flip back | Real-time preview update |
 

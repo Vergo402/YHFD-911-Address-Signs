@@ -34,7 +34,7 @@ Each row is one order. Columns you'll touch most as you work an order:
 - **Actual Vendor Total $ (dept)** — you fill this in during **Ordered**.
 - **Donation Received $ (dept)** — you fill this in during **Paid**.
 - **Placement Notes** — the resident's own notes about where/how to place the sign(s); the install crew needs this at the **Installed** step.
-- **Internal Notes** — free text for anything unusual. The system itself writes a note here automatically when a 5-digit house number is on a vertical sign (a tight fit) — look out for `⚠ 5 digits on vertical` and double check that sign will actually fit before ordering.
+- **Internal Notes** — free text for anything unusual. The system itself writes a note here automatically when a 5-digit house number is on a vertical sign (a tight fit) — look out for `⚠ 5-character house number on vertical sign` and double check that sign will actually fit before ordering.
 - **Email Status** — automatic; shows whether the confirmation emails sent successfully. You shouldn't need to touch this.
 
 **Never rename the `Orders` or `Quarantine` tabs.** The script that runs the website looks for those tab names exactly — renaming either one will break the site silently (orders will still submit, but nothing will show up where you're looking).
@@ -53,7 +53,13 @@ Use this each time you place an individual vendor order (trafficsign.com). Every
    - **Mounting bracket** — **always add one**: **Wing Bracket, Item Y3518** (2⅛×4¼", flag-style, ~$8.24) from the U-Channel Posts & Hardware section.
    - **Sign post** — **only if Post Included is checked** (i.e. **Mounting** = new post): **8-foot U-channel post, 1.12 lbs/ft, green enamel** (~$37.80), same catalog section.
    - **Blue relay marker(s):** product **49961** in blue, with the text from **Marker Texts** (e.g. "1000", "2000"). About $34.91 each.
-   - **Green arrow sign** (only if **Arrow Sign** is checked): product **49977** ("with Border – Numbers and Arrow") — 18×6, 4" characters, green, **single-sided**, Diamond Grade, .063", No Holes, no film. About $29.98. Use the direction the department already set in **Arrow Direction (dept)** during the Contacted step — the vendor offers left, right, up, down, and diagonal arrows.
+   - **Green arrow sign** (only if **Arrow Sign** is checked): product **49977** ("with Border – Numbers and Arrow") — 18×6, 4" characters, **single-sided**, Diamond Grade, .063", No Holes, no film. About $29.98. Use the direction the department already set in **Arrow Direction (dept)** during the Contacted step.
+
+     ⚠ This product has **two separate arrow settings** and you must set both:
+     1. **Sign Color** — the color list is doubled into "LEFT ARROW – Green…" and "RIGHT ARROW – Green…". This picks which **side of the sign** the arrow sits on. Choose the green entry on the side that matches the turn.
+     2. **Arrow** — a separate control for which way the arrow **points**: Left, Right, Up, Down, or one of four diagonals.
+
+     For a normal driveway split, left-side placement with a left-pointing arrow (or right/right) is what you want. Diagonals are useful when the split is at an angle.
 3. Before checking out, note the **cart's exact total including shipping** — this is the number you should have already confirmed with the resident during **Contacted**. If it doesn't match what you told them, contact them again before ordering.
 4. Complete the vendor checkout (the purchaser pays online, including shipping).
 5. Back in the Sheet, set **Status = Ordered** and fill in **Actual Vendor Total $ (dept)** with the real total you just paid.
