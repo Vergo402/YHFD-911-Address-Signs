@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>911 Address Signs — Yorktown Heights Engine Co. No. 1</title>
+<meta name="description" content="Order a reflective 911 address sign for your driveway from Yorktown Heights Engine Co. No. 1. You pay vendor cost only — installation is free.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='10' y='2' width='12' height='28' rx='2' fill='%23156B34'/%3E%3Crect x='12' y='4' width='8' height='24' rx='1' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<noscript>
+  <div class="noscript-banner" role="alert">
+    Ordering a sign needs JavaScript turned on in your browser. Please enable JavaScript, or
+    <a href="https://www.yorktownfire.org">contact the department directly</a> to place your order another way.
+  </div>
+</noscript>
+
+<div class="hp" aria-hidden="true">
+  <label for="contact_website">Leave this field blank</label>
+  <input type="text" name="contact_website" id="contact_website" tabindex="-1" autocomplete="off" aria-hidden="true">
+</div>
+
+<div class="page">
+  <div class="card">
+
+    <header class="site-header">
+      <div class="site-header-text">
+        <p class="site-header-title">Yorktown Heights Engine Co. No. 1</p>
+        <p class="site-header-tag">911 address sign program &middot; all volunteer for 117 years</p>
+      </div>
+      <a class="site-header-link" href="https://www.yorktownfire.org">yorktownfire.org ↗</a>
+    </header>
+
+    <section class="hero">
+      <div class="hero-intro">
+        <h1 class="hero-title">Seconds count. Help us find you.</h1>
+        <p class="hero-copy">A reflective address sign at the end of your driveway helps our crews find you at night, in rain, and in snow. The sign color tells responders how long your driveway is. We order your signs and hardware at the vendor's prices &mdash; you pay only for what you order &mdash; and our volunteers install everything free.</p>
+        <div class="hero-badges">
+          <span class="badge badge-accent">You pay vendor cost only</span>
+          <span class="badge badge-success">Free installation</span>
+        </div>
+      </div>
+      <div class="hero-preview">
+        <div class="preview-wrap">
+          <div id="signprev" class="sign-preview" aria-hidden="true"></div>
+        </div>
+        <p id="prevcap" class="preview-caption">6&Prime;&times;18&Prime; vertical &middot; diamond grade &middot; two-sided &middot; bordered</p>
+      </div>
+    </section>
+
+    <form id="orderform" class="order-form" novalidate>
+
+      <section class="form-section">
+        <h2 class="section-title">1 &middot; Your sign</h2>
+
+        <div class="field-row">
+          <div class="field field-narrow">
+            <label class="field-label" for="hnum">House number</label>
+            <input id="hnum" name="hnum" type="text" placeholder="1234" maxlength="5" autocomplete="off">
+            <p class="field-err" data-for="hnum" hidden></p>
+          </div>
+
+          <fieldset class="field field-wide radio-fieldset">
+            <legend class="field-label">Sign orientation</legend>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="orient" value="v" checked> Vertical
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="orient" value="h"> Horizontal
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <p id="digitwarn" class="warn-text" hidden aria-live="polite">5-digit numbers don't fit the vertical sign at 4&Prime; characters &mdash; we suggest horizontal.</p>
+
+        <div class="field field-full">
+          <label class="field-label" for="mount">Where at the end of your driveway should we mount it? <span class="muted">(bracket included in your order; no holes drilled)</span></label>
+          <select id="mount" name="mount">
+            <option value="mailbox">On my mailbox post</option>
+            <option value="existing">On an existing post</option>
+            <option value="newpost">I need a post &mdash; add one to my order (+$37.80)</option>
+          </select>
+        </div>
+
+        <fieldset class="field field-full tier-fieldset">
+          <legend class="field-label">How long is your driveway? <span class="muted">(sets your sign color)</span></legend>
+          <div class="tier-grid">
+            <label class="tier-option">
+              <input type="radio" name="tier" value="green" checked>
+              <span class="tier-swatch tier-swatch-green"></span>
+              <span class="tier-copy">Under 150&prime;<span class="tier-sub">Green sign</span></span>
+            </label>
+            <label class="tier-option">
+              <input type="radio" name="tier" value="yellow">
+              <span class="tier-swatch tier-swatch-yellow"></span>
+              <span class="tier-copy">150&prime; to 1,000&prime;<span class="tier-sub">Yellow sign + blue marker</span></span>
+            </label>
+            <label class="tier-option">
+              <input type="radio" name="tier" value="red">
+              <span class="tier-swatch tier-swatch-red"></span>
+              <span class="tier-copy">Over 1,000&prime;<span class="tier-sub">Red sign + blue markers</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="lenwrap" class="conditional" hidden>
+          <label class="field-label" for="dlen">Approximate driveway length (feet) <span class="muted">&mdash; a blue relay marker goes every 1,000&prime; back from the house</span></label>
+          <input id="dlen" name="dlen" type="number" min="150" max="20000" step="50" placeholder="e.g. 1400" class="field-medium">
+          <p class="field-err" data-for="dlen" hidden></p>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="shared" name="shared">
+          <span class="checkbox-copy">We share a common driveway with other homes
+            <span class="checkbox-sub">You'll also get a horizontal green number sign with an arrow, installed where the driveway splits. We confirm the arrow direction with you before ordering. <span class="checkbox-tip">Tip: neighbors on your driveway should order together</span> so we can combine the signs at the split.</span>
+          </span>
+        </label>
+        <div id="sharedwrap" class="conditional" hidden>
+          <label class="field-label" for="sharednums">House numbers sharing your driveway (if you know them)</label>
+          <input type="text" id="sharednums" name="sharednums" maxlength="100" placeholder="e.g. 1236, 1238" class="field-full">
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2 class="section-title">2 &middot; Property &amp; contact</h2>
+
+        <div class="contact-grid">
+          <div class="field">
+            <label class="field-label" for="fullname">Full name</label>
+            <input type="text" id="fullname" name="fullname" autocomplete="name">
+            <p class="field-err" data-for="fullname" hidden></p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="addr">Property street address</label>
+            <input type="text" id="addr" name="addr" autocomplete="street-address">
+            <p class="field-err" data-for="addr" hidden></p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel">
+            <p class="field-err" data-for="phone" hidden></p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email">
+            <p class="field-err" data-for="email" hidden></p>
+          </div>
+        </div>
+
+        <fieldset class="contact-method-fieldset">
+          <legend class="sr-only">Preferred contact method</legend>
+          <div class="contact-method-row">
+            <label class="radio-inline"><input type="radio" name="contactm" value="text" checked> Text me</label>
+            <label class="radio-inline"><input type="radio" name="contactm" value="call"> Call me</label>
+            <label class="radio-inline"><input type="radio" name="contactm" value="email"> Email me</label>
+          </div>
+        </fieldset>
+
+        <label class="checkbox-inline">
+          <input type="checkbox" id="rental" name="rental"> This is a rental or second property
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" id="attest" name="attest"> I confirm this address is within the Yorktown Heights fire district <span class="required-mark">*</span>
+        </label>
+        <p class="field-err" data-for="attest" hidden></p>
+
+        <div class="field field-full">
+          <label class="field-label" for="notes">Placement notes</label>
+          <textarea id="notes" name="notes" maxlength="1000" placeholder="Placement notes for our crew — preferred spot, dogs, gate code, anything buried nearby"></textarea>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2 class="section-title">3 &middot; Your order</h2>
+
+        <div id="summary" class="summary-box" aria-live="polite"></div>
+        <p class="price-note">Prices are the sign vendor's current prices (shown as of today) &mdash; we confirm your exact total with you before placing the order.</p>
+
+        <p class="donation-intro">Installation is free &mdash; we're volunteers. Add a donation to support the Yorktown Heights Engine Company #1 if you'd like:</p>
+        <div id="dtiers" class="donation-tiers" role="group" aria-label="Donation amount">
+          <button type="button" class="donation-btn" data-d="0">No donation</button>
+          <button type="button" class="donation-btn" data-d="10">$10</button>
+          <button type="button" class="donation-btn" data-d="25" id="defdon">$25</button>
+          <button type="button" class="donation-btn" data-d="50">$50</button>
+          <button type="button" class="donation-btn" data-d="-1">Other</button>
+        </div>
+        <div class="field field-medium">
+          <label class="field-label sr-only" for="donother">Custom donation amount</label>
+          <input type="number" id="donother" name="donother" min="1" max="10000" placeholder="Custom amount $" hidden>
+          <p class="field-err" data-for="donother" hidden></p>
+        </div>
+
+        <p class="total-line">Total due at installation: <span id="total" aria-live="polite"></span> &middot; cash or check to &ldquo;Yorktown Heights Engine Co. 1&rdquo;. Nothing is paid online.</p>
+      </section>
+
+      <div id="formerr" class="form-err" hidden aria-live="polite"></div>
+
+      <div class="submit-row">
+        <button type="submit" id="submitbtn" class="submit-btn">Place my order</button>
+        <span class="submit-help">We'll confirm your total and schedule by your preferred contact method.</span>
+      </div>
+
+      <div id="successpanel" class="success-panel" hidden aria-live="polite">
+        <h2 class="success-heading">Order received &mdash; thank you</h2>
+        <p class="success-orderid">Order <strong id="successOrderId"></strong></p>
+        <ul id="successItems" class="success-items"></ul>
+        <p class="success-next"><strong>What happens next:</strong> we'll confirm your exact total, including shipping, before we place your vendor order. Payment is cash or check at installation, payable to &ldquo;Yorktown Heights Engine Co. 1.&rdquo; We'll reach out using your preferred contact method to schedule.</p>
+        <p id="paylink" class="success-paylink" hidden></p>
+      </div>
+
+      <div id="softpanel" class="soft-panel" hidden aria-live="polite">
+        <h2 class="soft-heading">Order submitted</h2>
+        <p>Your order looks like it went through, but we couldn't confirm it right away. If you don't get a confirmation email within 15 minutes, please <span id="softContactFallback"></span>get in touch so we can make sure it was received.</p>
+      </div>
+
+    </form>
+  </div>
+
+  <footer class="site-footer">
+    <a href="https://www.yorktownfire.org">yorktownfire.org</a>
+    <p>Run by volunteers &middot; this site costs the department $0</p>
+  </footer>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>

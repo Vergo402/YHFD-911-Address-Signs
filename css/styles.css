@@ -1,0 +1,583 @@
+/* ============================================================
+   YHEC1 911 Address Sign Portal — styles
+   Mobile-first. Colors match approved mockup v4.
+   ============================================================ */
+
+:root {
+  --surface-1: #f4f3ef;
+  --surface-2: #fff;
+  --border: #d7d5cd;
+  --border-strong: #b9b7ae;
+  --border-accent: #378ADD;
+  --bg-accent: #E6F1FB;
+  --text-accent: #185FA5;
+  --bg-success: #EAF3DE;
+  --text-success: #3B6D11;
+  --text-primary: #1a1a18;
+  --text-secondary: #5f5e5a;
+  --text-muted: #6e6c60; /* darkened from mockup's #8a887f to clear 4.5:1 AA on white at small sizes */
+  --text-warning: #854F0B;
+  --text-danger: #A32D2D;
+  --radius: 8px;
+
+  --tier-green: #156B34;
+  --tier-yellow: #E8B60A;
+  --tier-red: #A32D2D;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  overflow-x: hidden;
+}
+
+a { color: var(--text-accent); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* focus visibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--border-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- noscript banner ---------- */
+
+.noscript-banner {
+  background: var(--text-danger);
+  color: #fff;
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.noscript-banner a { color: #fff; text-decoration: underline; }
+
+/* ---------- honeypot (off-screen, not display:none) ---------- */
+
+.hp {
+  position: absolute;
+  left: -5000px;
+  top: -5000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- layout shell ---------- */
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.card {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  border-top: 4px solid var(--text-danger);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.site-header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.site-header-tag {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.site-header-link {
+  font-size: 13px;
+  text-decoration: none;
+  align-self: flex-start;
+}
+.site-header-link:hover { text-decoration: underline; }
+
+/* ---------- hero ---------- */
+
+.hero {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 20px;
+  padding: 20px 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.hero-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.hero-copy {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+}
+.badge-accent { background: var(--bg-accent); color: var(--text-accent); }
+.badge-success { background: var(--bg-success); color: var(--text-success); }
+
+.hero-preview {
+  text-align: center;
+}
+
+.preview-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+.sign-preview {
+  background: var(--tier-green);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 60px;
+  min-height: 100px;
+}
+
+.preview-caption {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ---------- form shell ---------- */
+
+.order-form {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section { min-width: 0; }
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------- generic field styles ---------- */
+
+label { cursor: pointer; }
+
+.field-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+  cursor: default;
+}
+
+input, select, textarea, button {
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-primary);
+}
+
+input, select, textarea {
+  width: 100%;
+}
+
+/* Radios and checkboxes must keep their intrinsic size — the 100% width
+   above would stretch them into wide invisible click targets that push
+   their labels apart and break click alignment. */
+input[type="radio"], input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  flex: none;
+}
+
+textarea {
+  min-height: 68px;
+  resize: vertical;
+}
+
+button { cursor: pointer; }
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field-full { width: 100%; }
+.field-medium { max-width: 220px; width: 100%; }
+.field-narrow input { width: 100%; }
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.warn-text {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--text-warning);
+}
+
+.muted { color: var(--text-muted); }
+
+.required-mark { color: var(--text-danger); }
+
+/* ---------- radio / checkbox groups ---------- */
+
+.radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.radio-option {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.radio-fieldset { margin-bottom: 0; }
+
+.tier-fieldset { margin-bottom: 0; }
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.tier-option {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.tier-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex: none;
+}
+.tier-swatch-green { background: var(--tier-green); }
+.tier-swatch-yellow { background: var(--tier-yellow); }
+.tier-swatch-red { background: var(--tier-red); }
+
+.tier-copy { line-height: 1.3; }
+
+.tier-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.conditional { margin-top: 10px; }
+
+.checkbox-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 10px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.checkbox-row input { width: auto; margin-top: 2px; flex: none; }
+
+.checkbox-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.checkbox-tip {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ---------- section 2: contact ---------- */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.contact-grid .field { margin-bottom: 0; }
+
+.contact-method-fieldset { margin-bottom: 10px; }
+
+.contact-method-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.radio-inline {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.radio-inline input { width: auto; }
+
+.checkbox-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.checkbox-inline input { width: auto; flex: none; }
+
+/* ---------- section 3: order summary ---------- */
+
+.summary-box {
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.price-note {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.donation-intro {
+  margin: 16px 0 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.donation-tiers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.donation-btn {
+  font-size: 13px;
+}
+
+.donation-btn.selected {
+  border-color: var(--border-accent);
+  background: var(--bg-accent);
+  color: var(--text-accent);
+}
+
+.total-line {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.total-line #total {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ---------- errors ---------- */
+
+.field-err {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-danger);
+}
+
+.form-err {
+  background: var(--bg-success);
+  background: #FBEAEA;
+  border: 1px solid var(--text-danger);
+  color: var(--text-danger);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.form-err ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* ---------- submit ---------- */
+
+.submit-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border-top: 0.5px solid var(--border);
+  padding-top: 16px;
+}
+
+.submit-btn {
+  background: var(--text-danger);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: var(--radius);
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-help {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---------- success / soft panels ---------- */
+
+.success-panel,
+.soft-panel {
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.success-panel {
+  background: var(--bg-success);
+  border: 1px solid var(--text-success);
+}
+.success-heading {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text-success);
+}
+.success-orderid { margin: 0 0 10px; font-size: 14px; }
+.success-items { margin: 0 0 12px; padding-left: 18px; font-size: 13px; }
+.success-next { margin: 0 0 8px; font-size: 13px; color: var(--text-secondary); }
+.success-paylink { margin: 8px 0 0; font-size: 13px; }
+
+.soft-panel {
+  background: #FFF8E6;
+  border: 1px solid var(--text-warning);
+}
+.soft-heading {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text-warning);
+}
+.soft-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+
+/* ---------- footer ---------- */
+
+.site-footer {
+  text-align: center;
+  padding: 20px 12px 32px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.site-footer a { display: block; margin-bottom: 4px; }
+.site-footer p { margin: 0; }
+
+/* ============================================================
+   Responsive — desktop breakpoint (~680px)
+   ============================================================ */
+
+@media (min-width: 680px) {
+  .page { padding: 24px 16px; }
+
+  .site-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+  }
+  .site-header-link { align-self: center; }
+
+  .hero {
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 24px;
+  }
+  .hero-intro { flex: 1; }
+  .hero-preview { min-width: 170px; }
+  .hero-title { font-size: 22px; }
+
+  .order-form { padding: 20px 24px; }
+
+  .field-row {
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .field-narrow { min-width: 130px; }
+  .field-wide { flex: 1; min-width: 210px; }
+
+  .tier-grid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+
+  .contact-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .submit-row {
+    flex-direction: row;
+    align-items: center;
+  }
+}

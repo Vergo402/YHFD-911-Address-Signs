@@ -1,0 +1,183 @@
+<!-- Approved mockup v4 (2026-08-19). Binding visual target for index.html.
+     Rendered originally as a chat widget with host CSS vars; fallback vars added for standalone viewing.
+
+     KNOWN COPY DIVERGENCE (deliberate): this mockup's hero says "We bulk-order
+     the signs and hardware", which predates the confirmed rule that every order
+     is placed individually. index.html says "We order your signs and hardware"
+     instead. Layout and all other copy still match. -->
+<style>
+:root{--surface-1:#f4f3ef;--surface-2:#fff;--border:#d7d5cd;--border-strong:#b9b7ae;--border-accent:#378ADD;--bg-accent:#E6F1FB;--text-accent:#185FA5;--bg-success:#EAF3DE;--text-success:#3B6D11;--text-primary:#1a1a18;--text-secondary:#5f5e5a;--text-muted:#8a887f;--text-warning:#854F0B;--text-danger:#A32D2D;--radius:8px;}
+body{font-family:system-ui,sans-serif;color:var(--text-primary);max-width:720px;margin:2rem auto;}
+input,select,textarea,button{font:inherit;padding:7px 10px;border:1px solid var(--border-strong);border-radius:8px;background:#fff;}
+button{cursor:pointer;}
+</style>
+<div style="background: var(--surface-1); border-radius: 12px; padding: 16px;">
+  <div style="background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; overflow:hidden;">
+
+    <div style="border-top: 4px solid #A32D2D; padding: 16px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom: 0.5px solid var(--border);">
+      <div>
+        <p style="margin:0; font-size:16px; font-weight:500;">Yorktown Heights Engine Co. No. 1</p>
+        <p style="margin:0; font-size:12px; color: var(--text-secondary);">911 address sign program &middot; all volunteer for 117 years</p>
+      </div>
+      <a href="https://www.yorktownfire.org" style="font-size:13px; color: var(--text-accent); text-decoration:none;">yorktownfire.org ↗</a>
+    </div>
+
+    <div style="display:flex; gap:24px; padding: 20px 24px; align-items:center; border-bottom: 0.5px solid var(--border);">
+      <div style="flex:1;">
+        <h1 style="margin:0 0 8px; font-size:22px; font-weight:500;">Seconds count. Help us find you.</h1>
+        <p style="margin:0 0 12px; font-size:14px; color: var(--text-secondary); line-height:1.6;">A reflective address sign at the end of your driveway helps our crews find you at night, in rain, and in snow. The sign color tells responders how long your driveway is. We bulk-order the signs and hardware at the vendor's prices &mdash; you pay only for what you order &mdash; and our volunteers install everything free.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span style="background: var(--bg-accent); color: var(--text-accent); font-size:12px; padding: 4px 10px; border-radius: var(--radius);">You pay vendor cost only</span>
+          <span style="background: var(--bg-success); color: var(--text-success); font-size:12px; padding: 4px 10px; border-radius: var(--radius);">Free installation</span>
+        </div>
+      </div>
+      <div style="text-align:center; min-width:170px;">
+        <div id="prevwrap" style="display:flex; justify-content:center; align-items:center; min-height:150px;">
+          <div id="signprev" style="background:#156B34; border-radius:8px; padding:8px;"></div>
+        </div>
+        <p id="prevcap" style="margin:6px 0 0; font-size:11px; color: var(--text-muted);">6&Prime;&times;18&Prime; vertical &middot; diamond grade &middot; two-sided &middot; bordered</p>
+      </div>
+    </div>
+
+    <div style="padding: 20px 24px; display:flex; flex-direction:column; gap:20px;">
+
+      <div>
+        <p style="margin:0 0 8px; font-size:14px; font-weight:500;">1 &middot; Your sign</p>
+        <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="min-width:130px;">
+            <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:4px;">House number</label>
+            <input id="hnum" type="text" value="1234" maxlength="5" style="width:100%;" />
+          </div>
+          <div style="flex:1; min-width:210px;">
+            <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:4px;">Sign orientation</label>
+            <div style="display:flex; gap:8px;">
+              <label style="flex:1; display:flex; gap:8px; align-items:center; border:0.5px solid var(--border); border-radius:var(--radius); padding:8px 12px; cursor:pointer; font-size:13px;"><input type="radio" name="orient" value="v" checked /> Vertical</label>
+              <label style="flex:1; display:flex; gap:8px; align-items:center; border:0.5px solid var(--border); border-radius:var(--radius); padding:8px 12px; cursor:pointer; font-size:13px;"><input type="radio" name="orient" value="h" /> Horizontal</label>
+            </div>
+          </div>
+        </div>
+        <p id="digitwarn" style="display:none; margin:-6px 0 10px; font-size:12px; color:var(--text-warning);">5-digit numbers don't fit the vertical sign at 4&Prime; characters &mdash; we suggest horizontal.</p>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:4px;">Where at the end of your driveway should we mount it? <span style="color:var(--text-muted);">(bracket included in your order; no holes drilled)</span></label>
+          <select id="mount" style="width:100%;">
+            <option value="mailbox">On my mailbox post</option>
+            <option value="existing">On an existing post</option>
+            <option value="newpost">I need a post &mdash; add one to my order (~$35)</option>
+          </select>
+        </div>
+        <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:6px;">How long is your driveway? <span style="color:var(--text-muted);">(sets your sign color)</span></label>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:8px;">
+          <label style="display:flex; gap:8px; align-items:center; border:0.5px solid var(--border); border-radius:var(--radius); padding:10px 12px; cursor:pointer; font-size:13px;">
+            <input type="radio" name="tier" value="green" checked />
+            <span style="width:14px; height:14px; border-radius:3px; background:#156B34; flex:none;"></span>
+            <span>Under 150&prime;<span style="display:block; font-size:11px; color:var(--text-muted);">Green sign</span></span>
+          </label>
+          <label style="display:flex; gap:8px; align-items:center; border:0.5px solid var(--border); border-radius:var(--radius); padding:10px 12px; cursor:pointer; font-size:13px;">
+            <input type="radio" name="tier" value="yellow" />
+            <span style="width:14px; height:14px; border-radius:3px; background:#E8B60A; flex:none;"></span>
+            <span>150&prime; to 1,000&prime;<span style="display:block; font-size:11px; color:var(--text-muted);">Yellow sign + blue marker</span></span>
+          </label>
+          <label style="display:flex; gap:8px; align-items:center; border:0.5px solid var(--border); border-radius:var(--radius); padding:10px 12px; cursor:pointer; font-size:13px;">
+            <input type="radio" name="tier" value="red" />
+            <span style="width:14px; height:14px; border-radius:3px; background:#A32D2D; flex:none;"></span>
+            <span>Over 1,000&prime;<span style="display:block; font-size:11px; color:var(--text-muted);">Red sign + blue markers</span></span>
+          </label>
+        </div>
+        <div id="lenwrap" style="display:none; margin-top:10px;">
+          <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:4px;">Approximate driveway length (feet) <span style="color:var(--text-muted);">&mdash; a blue relay marker goes every 1,000&prime; back from the house</span></label>
+          <input id="dlen" type="number" min="150" max="20000" step="50" placeholder="e.g. 1400" style="width:200px;" />
+        </div>
+        <label style="display:flex; gap:10px; align-items:flex-start; margin-top:10px; background: var(--surface-1); border-radius: var(--radius); padding: 10px 14px; font-size:13px; cursor:pointer;">
+          <input type="checkbox" id="shared" style="margin-top:2px;" />
+          <span>We share a common driveway with other homes
+            <span style="display:block; font-size:12px; color:var(--text-secondary); margin-top:2px;">You'll also get a horizontal green number sign with an arrow, installed where the driveway splits. We confirm the arrow direction with you before ordering. <span style="font-weight:500; color:var(--text-primary);">Tip: neighbors on your driveway should order together</span> so we can combine the signs at the split.</span>
+          </span>
+        </label>
+        <div id="sharedwrap" style="display:none; margin-top:8px;">
+          <input type="text" placeholder="House numbers sharing your driveway (if you know them)" style="width:100%;" />
+        </div>
+      </div>
+
+      <div>
+        <p style="margin:0 0 8px; font-size:14px; font-weight:500;">2 &middot; Property &amp; contact</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+          <input type="text" placeholder="Full name" />
+          <input type="text" placeholder="Property street address" />
+          <input type="tel" placeholder="Phone" />
+          <input type="email" placeholder="Email" />
+        </div>
+        <div style="display:flex; gap:16px; margin-top:10px; flex-wrap:wrap; font-size:13px; color:var(--text-secondary);">
+          <label style="display:flex; gap:6px; align-items:center;"><input type="radio" name="c" checked /> Text me</label>
+          <label style="display:flex; gap:6px; align-items:center;"><input type="radio" name="c" /> Call me</label>
+          <label style="display:flex; gap:6px; align-items:center;"><input type="radio" name="c" /> Email me</label>
+        </div>
+        <label style="display:flex; gap:8px; align-items:center; margin-top:10px; font-size:13px; color:var(--text-secondary);"><input type="checkbox" /> This is a rental or second property</label>
+        <label style="display:flex; gap:8px; align-items:center; margin-top:6px; font-size:13px;"><input type="checkbox" /> I confirm this address is within the Yorktown Heights fire district <span style="color:var(--text-danger);">*</span></label>
+        <textarea placeholder="Placement notes for our crew — preferred spot, dogs, gate code, anything buried nearby" style="width:100%; margin-top:10px; min-height:52px;"></textarea>
+      </div>
+
+      <div>
+        <p style="margin:0 0 8px; font-size:14px; font-weight:500;">3 &middot; Your order</p>
+        <div id="summary" style="background: var(--surface-1); border-radius: var(--radius); padding: 12px 16px; font-size:13px;"></div>
+        <p style="margin:6px 0 0; font-size:12px; color: var(--text-muted);">Prices are the sign vendor's current prices (shown as of today) &mdash; we confirm your exact total with you before placing the order.</p>
+        <p style="margin:12px 0 6px; font-size:13px; color: var(--text-secondary);">Installation is free &mdash; we're volunteers. Add a donation to support the Yorktown Heights Engine Company #1 if you'd like:</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="dtiers">
+          <button type="button" data-d="0">No donation</button>
+          <button type="button" data-d="10">$10</button>
+          <button type="button" data-d="25" id="defdon">$25</button>
+          <button type="button" data-d="50">$50</button>
+          <button type="button" data-d="-1">Other</button>
+        </div>
+        <p style="margin:10px 0 0; font-size:13px; color: var(--text-secondary);">Total due at installation: <span id="total" style="font-weight:500; color:var(--text-primary);"></span> &middot; cash or check to &ldquo;Yorktown Heights Engine Co. 1&rdquo;. Nothing is paid online.</p>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:12px; border-top: 0.5px solid var(--border); padding-top:16px;">
+        <button type="button" style="background: #A32D2D; color:#fff; border:none; padding: 10px 20px; font-weight:500;">Place my order</button>
+        <span style="font-size:12px; color: var(--text-muted);">We'll confirm your total and schedule by your preferred contact method.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const COLORS={green:{bg:'#156B34',fg:'#fff',name:'Green'},yellow:{bg:'#E8B60A',fg:'#111',name:'Yellow'},red:{bg:'#A32D2D',fg:'#fff',name:'Red'}};
+const P={sign:30,bracket:20,post:35,marker:30,arrow:32};
+let tier='green',orient='v',shared=false,donation=25,mount='mailbox';
+const prev=document.getElementById('signprev'),sum=document.getElementById('summary'),tot=document.getElementById('total'),cap=document.getElementById('prevcap'),warn=document.getElementById('digitwarn');
+function digits(){const v=document.getElementById('hnum').value;return (v||'').replace(/[^0-9A-Za-z]/g,'').slice(0,5)||'?';}
+function markers(){
+  if(tier==='green')return[];
+  if(tier==='yellow')return['1000'];
+  const len=+document.getElementById('dlen').value||0;
+  const n=Math.max(1,Math.floor(len/1000));
+  return Array.from({length:n},(_,i)=>String((i+1)*1000));
+}
+function render(){
+  const c=COLORS[tier],d=digits(),vert=orient==='v';
+  prev.style.background=c.bg;
+  prev.innerHTML='<div style="border:2px solid '+c.fg+';border-radius:5px;display:flex;'+(vert?'flex-direction:column;':'flex-direction:row;')+'gap:'+(vert?'3px':'5px')+';padding:'+(vert?'10px 9px':'8px 14px')+';">'
+    +d.split('').map(x=>'<span style="color:'+c.fg+';font-size:'+(vert?24:26)+'px;font-weight:500;line-height:1.05;text-align:center;">'+x+'</span>').join('')+'</div>';
+  cap.textContent=(vert?'6″×18″ vertical':'18″×6″ horizontal')+' · diamond grade · two-sided · bordered';
+  warn.style.display=(vert&&d.length>4)?'block':'none';
+  const items=[[c.name+' bordered address sign ('+d+'), '+(vert?'vertical':'horizontal')+', two-sided',P.sign],['Mounting bracket ('+(vert?'vertical':'horizontal')+')',P.bracket]];
+  if(mount==='newpost')items.push(['Sign post',P.post]);
+  markers().forEach(t=>items.push(['Blue relay marker "'+t+'", vertical',P.marker]));
+  if(shared)items.push(['Green arrow sign for the split (horizontal, single-sided)',P.arrow]);
+  const st=items.reduce((a,i)=>a+i[1],0);
+  sum.innerHTML=items.map(i=>'<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;"><span>'+i[0]+'</span><span style="flex:none;">$'+i[1]+'</span></div>').join('')
+    +'<div style="display:flex;justify-content:space-between;border-top:0.5px solid var(--border);margin-top:6px;padding-top:6px;font-weight:500;"><span>Your signs &amp; hardware</span><span>$'+st+'</span></div>';
+  tot.textContent='$'+(st+(donation>0?donation:0))+(donation>0?' ($'+st+' order + $'+donation+' donation)':'');
+}
+document.querySelectorAll('input[name=orient]').forEach(r=>r.addEventListener('change',e=>{orient=e.target.value;render();}));
+document.querySelectorAll('input[name=tier]').forEach(r=>r.addEventListener('change',e=>{tier=e.target.value;document.getElementById('lenwrap').style.display=tier==='green'?'none':'block';render();}));
+document.getElementById('mount').addEventListener('change',e=>{mount=e.target.value;render();});
+document.getElementById('shared').addEventListener('change',e=>{shared=e.target.checked;document.getElementById('sharedwrap').style.display=shared?'block':'none';render();});
+document.getElementById('hnum').addEventListener('input',render);
+document.getElementById('dlen').addEventListener('input',render);
+document.querySelectorAll('#dtiers button').forEach(b=>b.addEventListener('click',()=>{
+  donation=+b.dataset.d>=0?+b.dataset.d:donation;
+  document.querySelectorAll('#dtiers button').forEach(x=>{x.style.borderColor='';x.style.background='';x.style.color='';});
+  b.style.borderColor='var(--border-accent)';b.style.background='var(--bg-accent)';b.style.color='var(--text-accent)';
+  render();
+}));
+render();document.getElementById('defdon').click();
+</script>
