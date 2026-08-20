@@ -66,6 +66,7 @@ function sanitizeOrder(data) {
   order.tier = String(data.tier || '');
   order.drivewayLengthFt = (data.drivewayLengthFt === '' || data.drivewayLengthFt === undefined || data.drivewayLengthFt === null)
     ? null : Number(data.drivewayLengthFt);
+  order.wantMarkers = data.wantMarkers === true;
   order.sharedDriveway = data.sharedDriveway === true;
   order.sharedNumbers = typeof data.sharedNumbers === 'string' ? data.sharedNumbers.trim() : '';
   order.fullName = typeof data.fullName === 'string' ? data.fullName.trim() : '';
@@ -186,21 +187,20 @@ function validateOrder(order) {
 }
 
 /**
- * CONTRACT.md section 3: green → none; yellow → one "1000" marker;
- * red → one marker per 1000 ft of driveway (min 1, capped at 20).
+ * CONTRACT.md section 3. Blue relay markers are an OPTIONAL purchase, offered
+ * on the red tier only: a marker sits every 1,000 ft, and a yellow-tier
+ * driveway (under 1,000 ft) never reaches the first one. One marker per
+ * 1,000 ft, minimum 1, capped at 20.
  */
-function computeMarkers(tier, lenFt) {
-  if (tier === 'yellow') return ['1000'];
-  if (tier === 'red') {
-    var count = Math.max(1, Math.floor((lenFt || 0) / 1000));
-    if (count > 20) count = 20;
-    var markers = [];
-    for (var i = 1; i <= count; i++) {
-      markers.push(String(i * 1000));
-    }
-    return markers;
+function computeMarkers(tier, lenFt, wantMarkers) {
+  if (tier !== 'red' || wantMarkers !== true) return [];
+  var count = Math.max(1, Math.floor((lenFt || 0) / 1000));
+  if (count > 20) count = 20;
+  var markers = [];
+  for (var i = 1; i <= count; i++) {
+    markers.push(String(i * 1000));
   }
-  return [];
+  return markers;
 }
 
 /**
@@ -229,7 +229,7 @@ function computeLineItems(order, prices) {
     items.push({ label: 'Sign post', amount: prices.post });
   }
 
-  var markers = computeMarkers(order.tier, order.drivewayLengthFt);
+  var markers = computeMarkers(order.tier, order.drivewayLengthFt, order.wantMarkers);
   for (var m = 0; m < markers.length; m++) {
     items.push({
       label: 'Blue relay marker "' + markers[m] + '", vertical',
@@ -446,7 +446,7 @@ function doPost(e) {
       cache.put(countKey, String(current + 1), CONFIG.THROTTLE.windowSec);
 
       // Compute — server is authoritative, client totals are never trusted.
-      var markers = computeMarkers(order.tier, order.drivewayLengthFt);
+      var markers = computeMarkers(order.tier, order.drivewayLengthFt, order.wantMarkers);
       var lineItems = computeLineItems(order, CONFIG.PRICES);
       var signsTotal = sumAmounts_(lineItems);
       var donation = order.donationChoice === 'other' ? order.donationOther : Number(order.donationChoice);
@@ -623,6 +623,11 @@ function sendDeptEmail_(order, derived) {
     lines.push('Driveway length: ' + order.drivewayLengthFt + ' ft');
   }
   lines.push('Mounting: ' + order.mounting);
+  if (order.tier === 'red') {
+    lines.push('Blue relay markers: ' + (order.wantMarkers
+      ? 'YES — ' + derived.markers.length + ' (' + derived.markers.join(', ') + ')'
+      : 'declined by resident'));
+  }
   lines.push('Shared/common driveway: ' + (order.sharedDriveway ? 'Yes' : 'No'));
   if (order.sharedDriveway) {
     lines.push('Neighbor house numbers: ' + order.sharedNumbers);

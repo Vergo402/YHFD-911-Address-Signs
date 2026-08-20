@@ -15,6 +15,9 @@ Element IDs (must exist exactly):
 | `mount` | `<select>` | Options with `value`: `mailbox`, `existing`, `newpost` |
 | `lenwrap` | `<div>` (hidden) | Wrapper for driveway length input |
 | `dlen` | `<input type="number" min="150" max="20000" step="50">` | Driveway length ft |
+| `markerwrap` | `<div>` (hidden) | Wrapper for the optional-marker block; shown only on the red tier |
+| `markers` | `<input type="checkbox">` | Opt in to blue relay markers (unchecked by default) |
+| `markercount` / `markerprice` / `markerdetail` | spans | Derived count, derived price, and the marker texts, all filled by app.js |
 | `shared` | `<input type="checkbox">` | Shared/common driveway |
 | `sharedwrap` | `<div>` (hidden) | Wrapper for neighbor numbers input |
 | `sharednums` | `<input type="text" maxlength="100">` | Neighbor house numbers |
@@ -57,7 +60,8 @@ window.PORTAL_CONFIG = {
 
 ## 3. Order math (identical client & server; server is authoritative)
 
-- `markers(tier, lenFt)`: green → `[]`; yellow → `["1000"]`; red → `["1000","2000",...]` with count `max(1, floor(lenFt/1000))`, capped at 20.
+- `computeMarkers(tier, lenFt, wantMarkers)`: `[]` unless `tier === "red"` **and** `wantMarkers === true`; then `["1000","2000",…]` with count `max(1, floor(lenFt/1000))`, capped at 20.
+  - Blue relay markers are an **optional purchase**, opt-in (unchecked by default), and offered **only on the red tier**. A yellow-tier driveway is under 1,000 ft, so it never reaches a 1,000-ft mark — it gets no markers at all.
 - Line items, in order:
   1. `{Color} bordered address sign ({number}), {vertical|horizontal}, two-sided` — `prices.sign`. Exception: yellow (tier 2) comes from the non-border product family, so its label drops the word "bordered": `Yellow address sign ({number}), …`
   2. `Mounting bracket ({vertical|horizontal})` — `prices.bracket`
@@ -75,6 +79,7 @@ window.PORTAL_CONFIG = {
   "houseNumber": "1234", "orientation": "v|h",
   "mounting": "mailbox|existing|newpost",
   "tier": "green|yellow|red", "drivewayLengthFt": 1400,
+  "wantMarkers": false,
   "sharedDriveway": false, "sharedNumbers": "",
   "fullName": "", "address": "", "phone": "", "email": "",
   "contactMethod": "text|call|email", "rentalProperty": false,
@@ -96,6 +101,7 @@ Never send a total. Never use `application/json` (CORS preflight breaks Apps Scr
 | mounting | enum mailbox/existing/newpost |
 | tier | enum green/yellow/red |
 | drivewayLengthFt | required iff tier≠green; integer; yellow 150–1000, red 1001–20000 |
+| wantMarkers | boolean; server ignores it unless tier is `red` |
 | sharedDriveway, rentalProperty | boolean |
 | sharedNumbers | ≤100 chars |
 | fullName | 2–100 chars |

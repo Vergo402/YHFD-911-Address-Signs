@@ -134,6 +134,11 @@ Paid
 green   (< 150 ft driveway)
 yellow  (150–1,000 ft)
 red     (> 1,000 ft, up to 20,000 ft)
+
+Blue relay markers are an OPTIONAL purchase offered only on the red tier,
+and the resident must opt in. Marker Texts (col H) is therefore empty on
+most rows — including red-tier rows where the resident declined. Empty
+simply means "no markers ordered"; it is not a missing value to chase.
 ```
 
 **Orientation** (Orders col F)
@@ -194,7 +199,9 @@ this tab turns each un-ordered row into a copy-paste configurator checklist.
 > `Vendor Order Helper` formulas need updating (the FILTER columns are
 > unaffected either way):
 > - **H (Marker Texts):** comma-separated, e.g. `1000, 2000, 3000`, or empty
->   string when the tier is green.
+>   string whenever no markers were ordered — which covers green and yellow
+>   tiers (never offered) and red-tier orders where the resident declined the
+>   optional add-on.
 > - **I (Arrow Sign):** `Yes` when `sharedDriveway` is true, else `No`
 >   string.
 > - **L (Post Included):** `Yes` / `No`.

@@ -27,7 +27,7 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 Each row is one order. Columns you'll touch most as you work an order:
 
 - **Status** — set this by hand as you move the order through the stages above.
-- **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission.
+- **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission. **Marker Texts** is empty unless the resident opted into the blue relay markers (offered on the red tier only).
 - **Arrow Direction (dept)** — blank until you set it during the **Contacted** step (only relevant when **Arrow Sign** is checked).
 - **Full Name**, **Property Address**, **Phone**, **Email**, **Preferred Contact** — how to reach the resident.
 - **Est Signs+Hardware $**, **Donation Pledged $**, **Est Total Due $** — what the *website* estimated. These are placeholders, not final — shipping isn't included.
@@ -52,7 +52,7 @@ Use this each time you place an individual vendor order (trafficsign.com). Every
    - **YELLOW address sign (tier 2 only):** the bordered products above have **no yellow** — use the non-border products instead: **8349** (vertical) or **8348** (horizontal), color **Yellow Reflective** (black characters), same size/material options, about $34.91. Yellow signs have no border — that's expected.
    - **Mounting bracket** — **always add one**: **Wing Bracket, Item Y3518** (2⅛×4¼", flag-style, ~$8.24) from the U-Channel Posts & Hardware section.
    - **Sign post** — **only if Post Included is checked** (i.e. **Mounting** = new post): **8-foot U-channel post, 1.12 lbs/ft, green enamel** (~$37.80), same catalog section.
-   - **Blue relay marker(s):** product **49961** in blue, with the text from **Marker Texts** (e.g. "1000", "2000"). About $34.91 each.
+   - **Blue relay marker(s):** product **49961** in blue, with the text from **Marker Texts** (e.g. "1000", "2000"). About $34.91 each. **Only order these if Marker Texts has values** — markers are an optional add-on that only red-tier residents are offered, and many will decline. An empty Marker Texts cell means none were ordered; it is not something to chase down.
    - **Green arrow sign** (only if **Arrow Sign** is checked): product **49977** ("with Border – Numbers and Arrow") — 18×6, 4" characters, **single-sided**, Diamond Grade, .063", No Holes, no film. About $29.98. Use the direction the department already set in **Arrow Direction (dept)** during the Contacted step.
 
      ⚠ This product has **two separate arrow settings** and you must set both:

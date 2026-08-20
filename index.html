@@ -97,20 +97,31 @@
             <label class="tier-option">
               <input type="radio" name="tier" value="yellow">
               <span class="tier-swatch tier-swatch-yellow"></span>
-              <span class="tier-copy">150&prime; to 1,000&prime;<span class="tier-sub">Yellow sign + blue marker</span></span>
+              <span class="tier-copy">150&prime; to 1,000&prime;<span class="tier-sub">Yellow sign</span></span>
             </label>
             <label class="tier-option">
               <input type="radio" name="tier" value="red">
               <span class="tier-swatch tier-swatch-red"></span>
-              <span class="tier-copy">Over 1,000&prime;<span class="tier-sub">Red sign + blue markers</span></span>
+              <span class="tier-copy">Over 1,000&prime;<span class="tier-sub">Red sign</span></span>
             </label>
           </div>
         </fieldset>
 
         <div id="lenwrap" class="conditional" hidden>
-          <label class="field-label" for="dlen">Approximate driveway length (feet) <span class="muted">&mdash; a blue relay marker goes every 1,000&prime; back from the house</span></label>
+          <label class="field-label" for="dlen">Approximate driveway length (feet)</label>
           <input id="dlen" name="dlen" type="number" min="150" max="20000" step="50" placeholder="e.g. 1400" class="field-medium">
           <p class="field-err" data-for="dlen" hidden></p>
+        </div>
+
+        <div id="markerwrap" class="marker-offer" hidden>
+          <label class="marker-offer-label">
+            <input type="checkbox" id="markers" name="markers">
+            <span class="marker-offer-copy">
+              <span class="marker-offer-head">Add blue relay markers &mdash; <span id="markercount"></span>, <span id="markerprice"></span></span>
+              <span class="marker-offer-body">Recommended for driveways this long. One engine can't push water all the way up a long driveway, so crews relay-pump: one engine at the road, another partway in. These blue markers sit every 1,000 feet and show arriving crews exactly where to set up, instead of guessing in the dark.</span>
+              <span class="marker-offer-detail" id="markerdetail"></span>
+            </span>
+          </label>
         </div>
 
         <label class="checkbox-row">

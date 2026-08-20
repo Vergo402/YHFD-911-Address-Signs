@@ -8,13 +8,15 @@ The portal is a **static HTML/CSS/JavaScript site deployed to GitHub Pages** tha
 
 ## Driveway-Length Tier System
 
-The sign color and markers depend on the driveway length from the road:
+The sign color depends on the driveway length from the road:
 
-| Driveway Length | Sign Color | Markers | Note |
-|---|---|---|---|
-| Under 150 feet | **Green** | None | Standard short driveway |
-| 150 feet – 1,000 feet | **Yellow** | One blue "1000" marker | Marker placed ~1000 ft back |
-| Over 1,000 feet | **Red** | One per 1,000 ft back | "1000", "2000", "3000", etc. |
+| Driveway Length | Sign Color | Blue relay markers |
+|---|---|---|
+| Under 150 feet | **Green** | Not offered |
+| 150 feet – 1,000 feet | **Yellow** | Not offered — the driveway never reaches a 1,000-foot mark |
+| Over 1,000 feet | **Red** | **Offered as an optional add-on**, one per 1,000 feet ("1000", "2000", …) |
+
+**Blue relay markers are an optional purchase, not automatic.** They exist for relay pumping: one engine can't push water the length of a long driveway, so crews stage a second engine partway in, and the markers show arriving crews where. Only red-tier orders see the offer, the checkbox starts unchecked, and the count and price are derived from the driveway length the resident entered.
 
 **Shared driveways** (multiple house numbers on one driveway) include an additional **green arrow sign** with the house number and arrow direction. The department sets the arrow direction before ordering — it is printed at the factory, not aimed on site.
 

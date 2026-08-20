@@ -16,17 +16,27 @@
 
   var TIER_NAMES = { green: 'Green', yellow: 'Yellow', red: 'Red' };
 
-  /** markers(tier, lenFt) — contract section 3. */
-  function computeMarkers(tier, lenFt) {
-    if (tier === 'yellow') return ['1000'];
-    if (tier === 'red') {
-      var n = Math.max(1, Math.floor((Number(lenFt) || 0) / 1000));
-      if (n > 20) n = 20;
-      var out = [];
-      for (var i = 1; i <= n; i++) out.push(String(i * 1000));
-      return out;
-    }
-    return []; // green (or unrecognized tier — fail safe to no markers)
+  /**
+   * computeMarkers(tier, lenFt, wantMarkers) — contract section 3.
+   * Blue relay markers are an optional purchase and only make sense on the
+   * red tier: a marker sits every 1,000 ft, and a yellow-tier driveway (under
+   * 1,000 ft) never reaches the first one.
+   */
+  function computeMarkers(tier, lenFt, wantMarkers) {
+    if (tier !== 'red' || wantMarkers !== true) return [];
+    var n = Math.max(1, Math.floor((Number(lenFt) || 0) / 1000));
+    if (n > 20) n = 20;
+    var out = [];
+    for (var i = 1; i <= n; i++) out.push(String(i * 1000));
+    return out;
+  }
+
+  /**
+   * What the resident would get if they opted in — used to label the offer
+   * ("2 markers, $69.82") without adding anything to the order.
+   */
+  function offeredMarkers(tier, lenFt) {
+    return computeMarkers(tier, lenFt, true);
   }
 
   /**
@@ -53,7 +63,7 @@
     if (state.mounting === 'newpost') {
       items.push({ label: 'Sign post', amount: prices.post });
     }
-    computeMarkers(state.tier, state.drivewayLengthFt).forEach(function (t) {
+    computeMarkers(state.tier, state.drivewayLengthFt, state.wantMarkers).forEach(function (t) {
       items.push({ label: 'Blue relay marker "' + t + '", vertical', amount: prices.marker });
     });
     if (state.sharedDriveway) {
@@ -137,6 +147,10 @@
       }
     }
 
+    if (typeof payload.wantMarkers !== 'boolean') {
+      fail('wantMarkers', 'Please reload the page and try again.');
+    }
+
     if (typeof payload.sharedDriveway !== 'boolean') {
       fail('sharedDriveway', 'Please reload the page and try again.');
     }
@@ -208,6 +222,7 @@
 
   window.PORTAL_TEST = {
     computeMarkers: computeMarkers,
+    offeredMarkers: offeredMarkers,
     computeLineItems: computeLineItems,
     computeTotals: computeTotals,
     validate: validate
@@ -257,6 +272,11 @@
       digitwarn: byId('digitwarn'),
       mount: byId('mount'),
       lenwrap: byId('lenwrap'),
+      markerwrap: byId('markerwrap'),
+      markers: byId('markers'),
+      markercount: byId('markercount'),
+      markerprice: byId('markerprice'),
+      markerdetail: byId('markerdetail'),
       dlen: byId('dlen'),
       shared: byId('shared'),
       sharedwrap: byId('sharedwrap'),
@@ -324,6 +344,9 @@
         orientation: orientation,
         mounting: mounting,
         drivewayLengthFt: isNaN(lenRaw) ? 0 : lenRaw,
+        // Only the red tier offers markers, so a checkbox left checked from a
+        // previous tier selection can't leak into a green/yellow order.
+        wantMarkers: tier === 'red' && !!(els.markers && els.markers.checked),
         sharedDriveway: els.shared ? !!els.shared.checked : false,
         houseNumber: normalizedHouseNumber()
       };
@@ -398,6 +421,28 @@
       var tier = getSelectedRadioValue('tier') || 'green';
       setHidden(els.lenwrap, tier === 'green');
       setHidden(els.sharedwrap, !(els.shared && els.shared.checked));
+
+      // Markers are offered on the red tier only. Leaving the tier clears the
+      // opt-in so a hidden checked box can never bill someone silently.
+      var offersMarkers = tier === 'red';
+      setHidden(els.markerwrap, !offersMarkers);
+      if (!offersMarkers && els.markers && els.markers.checked) {
+        els.markers.checked = false;
+      }
+      if (offersMarkers) {
+        var offered = window.PORTAL_TEST.offeredMarkers(tier, currentState().drivewayLengthFt);
+        if (els.markercount) {
+          els.markercount.textContent = offered.length + (offered.length === 1 ? ' marker' : ' markers');
+        }
+        if (els.markerprice) {
+          els.markerprice.textContent = '$' + fmtUSD(offered.length * (PRICES.marker || 0));
+        }
+        if (els.markerdetail) {
+          els.markerdetail.textContent = offered.length === 1
+            ? 'Your marker would read “1000”.'
+            : 'Your markers would read ' + offered.map(function (t) { return '“' + t + '”'; }).join(', ') + '.';
+        }
+      }
     }
 
     function renderAll() {
@@ -451,6 +496,7 @@
     radios('orient').forEach(function (r) { r.addEventListener('change', renderAll); });
     radios('tier').forEach(function (r) { r.addEventListener('change', renderAll); });
     if (els.mount) els.mount.addEventListener('change', renderAll);
+    if (els.markers) els.markers.addEventListener('change', renderAll);
     if (els.shared) els.shared.addEventListener('change', renderAll);
     if (els.hnum) els.hnum.addEventListener('input', renderAll);
     if (els.dlen) els.dlen.addEventListener('input', renderAll);
@@ -579,6 +625,7 @@
         mounting: state.mounting,
         tier: state.tier,
         drivewayLengthFt: state.tier === 'green' ? 0 : state.drivewayLengthFt,
+        wantMarkers: state.wantMarkers,
         sharedDriveway: state.sharedDriveway,
         sharedNumbers: els.sharednums ? els.sharednums.value.trim() : '',
         fullName: els.fullname ? els.fullname.value.trim() : '',
@@ -654,7 +701,8 @@
     function buildMockResponse(payload) {
       var state = {
         tier: payload.tier, orientation: payload.orientation, mounting: payload.mounting,
-        drivewayLengthFt: payload.drivewayLengthFt, sharedDriveway: payload.sharedDriveway,
+        drivewayLengthFt: payload.drivewayLengthFt, wantMarkers: payload.wantMarkers,
+        sharedDriveway: payload.sharedDriveway,
         houseNumber: payload.houseNumber
       };
       var items = window.PORTAL_TEST.computeLineItems(state, PRICES);
