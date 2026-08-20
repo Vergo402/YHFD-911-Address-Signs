@@ -276,6 +276,7 @@
       prevcap: byId('prevcap'),
       digitwarn: byId('digitwarn'),
       mount: byId('mount'),
+      mounthint: byId('mounthint'),
       lenwrap: byId('lenwrap'),
       measurenote: byId('measurenote'),
       markerwrap: byId('markerwrap'),
@@ -480,6 +481,20 @@
       }
     }
 
+    // What each mounting choice means in practice, including the escape hatch
+    // for a mailbox that turns out not to be at the driveway after all.
+    var MOUNT_HINTS = {
+      mailbox: "If your mailbox turns out to sit across the road or in a shared stand, we'll bring a post instead and let you know before ordering.",
+      existing: 'Tell us in the notes below what it is (fence post, gate post, lamp post) so we bring the right hardware.',
+      newpost: "We'll set a green U-channel post right at your driveway entrance."
+    };
+
+    function updateMountHint() {
+      if (!els.mounthint) return;
+      var v = els.mount ? els.mount.value : '';
+      els.mounthint.textContent = MOUNT_HINTS[v] || '';
+    }
+
     function toggleConditionalUI() {
       var tier = getSelectedRadioValue('tier') || 'green';
       // A length is only asked for on the two tiers that depend on it; green is
@@ -488,6 +503,7 @@
       setHidden(els.measurenote, tier !== 'unsure');
       setHidden(els.sharedwrap, !(els.shared && els.shared.checked));
       updateSharedPrompt();
+      updateMountHint();
 
       // Markers are offered on the red tier only. Leaving the tier clears the
       // opt-in so a hidden checked box can never bill someone silently.

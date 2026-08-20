@@ -16,6 +16,8 @@
   --text-primary: #1a1a18;
   --text-secondary: #5f5e5a;
   --text-muted: #6e6c60; /* darkened from mockup's #8a887f to clear 4.5:1 AA on white at small sizes */
+  --bg-warning: #FAEEDA;
+  --border-warning: #EF9F27;
   --text-warning: #854F0B;
   --text-danger: #A32D2D;
   --radius: 8px;
@@ -362,6 +364,38 @@ fieldset {
 }
 
 .measure-note-line { display: block; margin-top: 6px; }
+
+/* A sign on the wrong post marks the wrong place, so this constraint is
+   stated up front rather than left for the crew to discover on arrival. */
+.mount-rule {
+  background: var(--bg-warning);
+  border: 0.5px solid var(--border-warning);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.mount-rule-head {
+  font-weight: 500;
+  color: var(--text-warning);
+}
+
+.mount-rule-body {
+  display: block;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.mount-rule-body strong { font-weight: 500; color: var(--text-primary); }
+
+.mount-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
 
 /* Shown once a resident lists neighbours, to set the expectation that
    listing them records who to expect — it does not order their signs. */

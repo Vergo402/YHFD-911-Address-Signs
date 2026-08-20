@@ -78,12 +78,17 @@
         <p id="digitwarn" class="warn-text" hidden aria-live="polite">5-digit numbers don't fit the vertical sign at 4&Prime; characters &mdash; we suggest horizontal.</p>
 
         <div class="field field-full">
-          <label class="field-label" for="mount">Where at the end of your driveway should we mount it? <span class="muted">(bracket included in your order)</span></label>
+          <label class="field-label" for="mount">Where should we mount it? <span class="muted">(bracket included in your order)</span></label>
+          <div class="mount-rule">
+            <span class="mount-rule-head">Your sign has to stand at the end of your driveway, where it meets the road.</span>
+            <span class="mount-rule-body">That is the exact spot a crew is looking for when they turn in. A sign on a mailbox <strong>across the street</strong>, or on a <strong>shared mailbox stand</strong> down the road, points at the wrong place &mdash; so we can't use either one.</span>
+          </div>
           <select id="mount" name="mount">
-            <option value="mailbox">On my mailbox post</option>
-            <option value="existing">On an existing post</option>
-            <option value="newpost">I need a post &mdash; add one to my order (+$37.80)</option>
+            <option value="mailbox">My mailbox post &mdash; it stands at the end of my driveway</option>
+            <option value="existing">Another post already at the end of my driveway</option>
+            <option value="newpost">Nothing there to mount to &mdash; bring a post (+$37.80)</option>
           </select>
+          <p class="mount-hint" id="mounthint"></p>
         </div>
 
         <fieldset class="field field-full tier-fieldset">
