@@ -78,7 +78,7 @@
         <p id="digitwarn" class="warn-text" hidden aria-live="polite">5-digit numbers don't fit the vertical sign at 4&Prime; characters &mdash; we suggest horizontal.</p>
 
         <div class="field field-full">
-          <label class="field-label" for="mount">Where at the end of your driveway should we mount it? <span class="muted">(bracket included in your order; no holes drilled)</span></label>
+          <label class="field-label" for="mount">Where at the end of your driveway should we mount it? <span class="muted">(bracket included in your order)</span></label>
           <select id="mount" name="mount">
             <option value="mailbox">On my mailbox post</option>
             <option value="existing">On an existing post</option>
@@ -137,12 +137,20 @@
         <label class="checkbox-row">
           <input type="checkbox" id="shared" name="shared">
           <span class="checkbox-copy">We share a common driveway with other homes
-            <span class="checkbox-sub">You'll also get a horizontal green number sign with an arrow, installed where the driveway splits. We confirm the arrow direction with you before ordering. <span class="checkbox-tip">Tip: neighbors on your driveway should order together</span> so we can combine the signs at the split.</span>
+            <span class="checkbox-sub">You'll also get a horizontal green number sign with an arrow, installed where the driveway splits. We confirm the arrow direction with you before ordering. <span class="checkbox-tip">Tip: neighbors on your driveway should order together</span> so we can combine the signs at the end of the driveway.</span>
           </span>
         </label>
         <div id="sharedwrap" class="conditional" hidden>
           <label class="field-label" for="sharednums">House numbers sharing your driveway (if you know them)</label>
           <input type="text" id="sharednums" name="sharednums" maxlength="100" placeholder="e.g. 1236, 1238" class="field-full">
+          <div id="sharedprompt" class="shared-prompt" hidden>
+            <p class="shared-prompt-head" id="sharedpromptHead"></p>
+            <p class="shared-prompt-body">Every home on a shared driveway needs its own sign and its own arrow, so each household places its own order. Send them this page:</p>
+            <div class="shared-prompt-linkrow">
+              <code class="shared-prompt-link" id="sharedpromptUrl"></code>
+              <button type="button" class="shared-prompt-copy" id="sharedpromptCopy">Copy link</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -181,9 +189,6 @@
           </div>
         </fieldset>
 
-        <label class="checkbox-inline">
-          <input type="checkbox" id="rental" name="rental"> This is a rental or second property
-        </label>
         <label class="checkbox-inline">
           <input type="checkbox" id="attest" name="attest"> I confirm this address is within the Yorktown Heights fire district <span class="required-mark">*</span>
         </label>
@@ -243,7 +248,6 @@
 
   <footer class="site-footer">
     <a href="https://www.yorktownfire.org">yorktownfire.org</a>
-    <p>Run by volunteers &middot; this site costs the department $0</p>
   </footer>
 </div>
 

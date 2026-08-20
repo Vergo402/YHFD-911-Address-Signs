@@ -23,7 +23,6 @@ Element IDs (must exist exactly):
 | `sharedwrap` | `<div>` (hidden) | Wrapper for neighbor numbers input |
 | `sharednums` | `<input type="text" maxlength="100">` | Neighbor house numbers |
 | `fullname`, `addr`, `phone`, `email` | inputs | Contact fields |
-| `rental` | checkbox | Rental/2nd property |
 | `attest` | checkbox | Required in-district self-attest |
 | `notes` | `<textarea maxlength="1000">` | Placement notes |
 | `summary` | `<div>` | Itemized order summary (app.js owns innerHTML) |
@@ -85,7 +84,7 @@ window.PORTAL_CONFIG = {
   "wantMarkers": false,
   "sharedDriveway": false, "sharedNumbers": "",
   "fullName": "", "address": "", "phone": "", "email": "",
-  "contactMethod": "text|call|email", "rentalProperty": false,
+  "contactMethod": "text|call|email",
   "inDistrictAttest": true, "notes": "",
   "donationChoice": "0|10|25|50|other", "donationOther": 0,
   "elapsedMs": 12345, "contact_website": ""
@@ -105,7 +104,7 @@ Never send a total. Never use `application/json` (CORS preflight breaks Apps Scr
 | tier | enum green/yellow/red/unsure |
 | drivewayLengthFt | required only for tier yellow or red; integer; yellow 150–1000, red 1001–20000. Not required (and ignored) for green and unsure |
 | wantMarkers | boolean; server ignores it unless tier is `red` |
-| sharedDriveway, rentalProperty | boolean |
+| sharedDriveway | boolean |
 | sharedNumbers | ≤100 chars |
 | fullName | 2–100 chars |
 | address | 5–200 chars |
@@ -140,9 +139,9 @@ Order ID: `"YH-" + 6 chars from Utilities.getUuid() uppercased alphanumerics`.
 
 parse → honeypot (fake success + Quarantine) → elapsedMs gate → validate (errors out) → UUID cache hit? replay cached success (6 h) → email+address hash dedupe (10 min) → LockService + CacheService global counter (max 15/10 min → `{ok:false,errors:[{field:"",message:"We're receiving a lot of orders — please try again in a few minutes."}]}`) → compute items/totals from CONFIG prices → append row to `Orders` (Email Status "pending") → send dept email, resident email (each try/caught) → update Email Status → cache success by uuid → return. Outer try/catch: on crash after parse, email raw payload to dept. CONFIG block at top: `DEPT_EMAIL`, `PRICES` (mirror of config.js), `SHEET_ORDERS="Orders"`, `SHEET_QUARANTINE="Quarantine"`, `THROTTLE {windowSec:600,max:15}`, `MIN_ELAPSED_MS 5000`.
 
-## 9. Orders sheet columns (A→AB, exact order; appendRow must match)
+## 9. Orders sheet columns (A→AA, 27 columns, exact order; appendRow must match)
 
-Timestamp | Order ID | Status | House Number | Tier Color | Orientation | Driveway Ft | Marker Texts | Arrow Sign | Arrow Direction (dept) | Mounting | Post Included | Shared With Numbers | Full Name | Property Address | Phone | Email | Preferred Contact | Rental/2nd Property | In-District Attest | Placement Notes | Est Signs+Hardware $ | Donation Pledged $ | Est Total Due $ | Actual Vendor Total $ (dept) | Donation Received $ (dept) | Email Status | Internal Notes
+Timestamp | Order ID | Status | House Number | Tier Color | Orientation | Driveway Ft | Marker Texts | Arrow Sign | Arrow Direction (dept) | Mounting | Post Included | Shared With Numbers | Full Name | Property Address | Phone | Email | Preferred Contact | In-District Attest | Placement Notes | Est Signs+Hardware $ | Donation Pledged $ | Est Total Due $ | Actual Vendor Total $ (dept) | Donation Received $ (dept) | Email Status | Internal Notes
 
 Status values: `New`, `Contacted`, `Ordered`, `Installed`, `Paid`.
 

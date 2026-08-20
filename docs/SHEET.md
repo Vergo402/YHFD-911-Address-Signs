@@ -14,7 +14,7 @@ breaks the script; RUNBOOK.md carries the warning).
 
 ## 1. Orders tab
 
-### 1.1 Headers (row 1, columns A→AB — exact order, exact text)
+### 1.1 Headers (row 1, columns A→AA — 27 columns, exact order, exact text)
 
 `appendRow` in Code.gs writes an array in this order with no header lookup —
 the column **position** is the contract. Type each header exactly as shown into row 1 of a tab named `Orders`. Header
@@ -44,19 +44,18 @@ text.
 | P | Phone | ✅ | |
 | Q | Email | ✅ | |
 | R | Preferred Contact | ✅ | |
-| S | Rental/2nd Property | ✅ | |
-| T | In-District Attest | ✅ | |
-| U | Placement Notes | ✅ (resident's text, verbatim) | |
-| V | Est Signs+Hardware $ | ✅ | |
-| W | Donation Pledged $ | ✅ | |
-| X | Est Total Due $ | ✅ | |
-| Y | Actual Vendor Total $ (dept) | | ✅ **dept-only** — filled once the individual vendor order (incl. shipping) is actually placed. |
-| Z | Donation Received $ (dept) | | ✅ **dept-only** — filled when cash/check is collected at installation. |
-| AA | Email Status | ✅ (script sets `pending` → `sent` / `failed (dept)` / `failed (both)` after the email try/catch block) | |
-| AB | Internal Notes | partly ✅ / partly ✅ — script may append automated flags (e.g. the 5-digit-vertical warning also lands here per CONTRACT §3, or dedupe/throttle notes); dept freely adds its own notes in the same cell, on new lines |
+| S | In-District Attest | ✅ | |
+| T | Placement Notes | ✅ (resident's text, verbatim) | |
+| U | Est Signs+Hardware $ | ✅ | |
+| V | Donation Pledged $ | ✅ | |
+| W | Est Total Due $ | ✅ | |
+| X | Actual Vendor Total $ (dept) | | ✅ **dept-only** — filled once the individual vendor order (incl. shipping) is actually placed. |
+| Y | Donation Received $ (dept) | | ✅ **dept-only** — filled when cash/check is collected at installation. |
+| Z | Email Status | ✅ (script sets `pending` → `sent` / `failed (dept)` / `failed (both)` after the email try/catch block) | |
+| AA | Internal Notes | partly ✅ / partly ✅ — script may append automated flags (e.g. the 5-digit-vertical warning also lands here per CONTRACT §3, or dedupe/throttle notes); dept freely adds its own notes in the same cell, on new lines |
 
-So: **script-owned** columns are A, B, D–I, K–X, AA (plus the initial `New`
-in C). **Dept-owned** columns are J, Y, Z, and AB is shared (script may
+So: **script-owned** columns are A, B, D–I, K–W, Z (plus the initial `New`
+in C). **Dept-owned** columns are J, X, Y, and AA is shared (script may
 append; dept edits/extends the same cell). C is script-initialized then
 dept-advanced.
 
@@ -347,7 +346,7 @@ column J (Arrow Direction) before placing that arrow-sign line.
 
 ## Build checklist
 
-- [ ] Create `Orders` tab, headers A1:AB1 exactly per §1.1
+- [ ] Create `Orders` tab, headers A1:AA1 exactly per §1.1
 - [ ] Freeze row 1
 - [ ] Status dropdown + conditional formatting on column C
 - [ ] Create `Quarantine` tab, headers A1:C1, freeze row 1

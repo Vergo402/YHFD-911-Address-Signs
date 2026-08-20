@@ -188,10 +188,6 @@
       fail('contactMethod', 'Choose how we should contact you.');
     }
 
-    if (typeof payload.rentalProperty !== 'boolean') {
-      fail('rentalProperty', 'Please reload the page and try again.');
-    }
-
     if (payload.inDistrictAttest !== true) {
       fail('inDistrictAttest', 'Please confirm this address is within the Yorktown Heights fire district.');
     }
@@ -291,11 +287,14 @@
       shared: byId('shared'),
       sharedwrap: byId('sharedwrap'),
       sharednums: byId('sharednums'),
+      sharedprompt: byId('sharedprompt'),
+      sharedpromptHead: byId('sharedpromptHead'),
+      sharedpromptUrl: byId('sharedpromptUrl'),
+      sharedpromptCopy: byId('sharedpromptCopy'),
       fullname: byId('fullname'),
       addr: byId('addr'),
       phone: byId('phone'),
       email: byId('email'),
-      rental: byId('rental'),
       attest: byId('attest'),
       notes: byId('notes'),
       summary: byId('summary'),
@@ -383,11 +382,17 @@
       var d = previewDigits();
 
       els.signprev.style.background = c.bg;
-      // Yellow signs come from the non-border product family, so the preview
-      // drops the border frame for them (and the caption drops "bordered").
-      var frame = 'border:2px solid ' + (tier === 'yellow' ? 'transparent' : c.fg) + ';border-radius:5px;display:flex;' +
+      // The sign's own proportions come from a class so the number band stays
+      // centred the way it is printed, instead of hugging one edge.
+      els.signprev.className = 'sign-preview ' + (vert ? 'sign-preview-v' : 'sign-preview-h');
+      // The printed border is inset near the sign's edge — the container's
+      // padding provides that inset, so the frame fills what's left. Yellow
+      // comes from the non-border product family and has no frame at all.
+      var frame = 'border:2px solid ' + (tier === 'yellow' ? 'transparent' : c.fg) +
+        ';border-radius:5px;display:flex;align-items:center;justify-content:center;' +
+        'width:100%;height:100%;box-sizing:border-box;' +
         (vert ? 'flex-direction:column;' : 'flex-direction:row;') +
-        'gap:' + (vert ? '3px' : '5px') + ';padding:' + (vert ? '10px 9px' : '8px 14px') + ';';
+        'gap:' + (vert ? '2px' : '4px') + ';';
       var spans = d.split('').map(function (ch) {
         return '<span style="color:' + c.fg + ';font-size:' + (vert ? 24 : 26) +
           'px;font-weight:500;line-height:1.05;text-align:center;">' + escapeHtml(ch) + '</span>';
@@ -429,6 +434,52 @@
       return { state: state, items: items, totals: totals };
     }
 
+    /**
+     * Listing neighbours used to change nothing on screen, which read as the
+     * field being broken. It doesn't alter this resident's order — each home
+     * needs its own sign and arrow — so the prompt says so and hands over a
+     * link to pass along.
+     */
+    function updateSharedPrompt() {
+      if (!els.sharedprompt) return;
+      var listed = els.sharednums ? els.sharednums.value.trim() : '';
+      var sharedOn = !!(els.shared && els.shared.checked);
+      setHidden(els.sharedprompt, !(sharedOn && listed));
+      if (!(sharedOn && listed)) return;
+
+      var numbers = listed.split(/[,;/]+|\s+and\s+/).map(function (t) {
+        return t.trim();
+      }).filter(Boolean);
+      if (els.sharedpromptHead) {
+        els.sharedpromptHead.textContent = numbers.length === 1
+          ? 'Number ' + numbers[0] + ' needs to order too.'
+          : 'Numbers ' + numbers.slice(0, -1).join(', ') + ' and ' +
+            numbers[numbers.length - 1] + ' each need to order too.';
+      }
+      if (els.sharedpromptUrl) {
+        // Drop ?mock=1 and any other params so the shared link is the plain page.
+        els.sharedpromptUrl.textContent = location.origin + location.pathname;
+      }
+    }
+
+    if (els.sharedpromptCopy) {
+      // No clipboard access (old browser, or a non-secure origin) leaves the
+      // URL visible as selectable text, so hide the button rather than offer
+      // one that silently does nothing.
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        els.sharedpromptCopy.addEventListener('click', function () {
+          navigator.clipboard.writeText(location.origin + location.pathname).then(function () {
+            els.sharedpromptCopy.textContent = 'Copied';
+            setTimeout(function () { els.sharedpromptCopy.textContent = 'Copy link'; }, 2000);
+          }).catch(function () {
+            els.sharedpromptCopy.textContent = 'Press Cmd/Ctrl+C';
+          });
+        });
+      } else {
+        setHidden(els.sharedpromptCopy, true);
+      }
+    }
+
     function toggleConditionalUI() {
       var tier = getSelectedRadioValue('tier') || 'green';
       // A length is only asked for on the two tiers that depend on it; green is
@@ -436,6 +487,7 @@
       setHidden(els.lenwrap, tier === 'green' || tier === 'unsure');
       setHidden(els.measurenote, tier !== 'unsure');
       setHidden(els.sharedwrap, !(els.shared && els.shared.checked));
+      updateSharedPrompt();
 
       // Markers are offered on the red tier only. Leaving the tier clears the
       // opt-in so a hidden checked box can never bill someone silently.
@@ -512,6 +564,7 @@
     radios('tier').forEach(function (r) { r.addEventListener('change', renderAll); });
     if (els.mount) els.mount.addEventListener('change', renderAll);
     if (els.markers) els.markers.addEventListener('change', renderAll);
+    if (els.sharednums) els.sharednums.addEventListener('input', updateSharedPrompt);
     if (els.shared) els.shared.addEventListener('change', renderAll);
     if (els.hnum) els.hnum.addEventListener('input', renderAll);
     if (els.dlen) els.dlen.addEventListener('input', renderAll);
@@ -650,7 +703,6 @@
         phone: els.phone ? els.phone.value.trim() : '',
         email: els.email ? els.email.value.trim() : '',
         contactMethod: getSelectedRadioValue('contactm') || 'text',
-        rentalProperty: els.rental ? !!els.rental.checked : false,
         inDistrictAttest: els.attest ? !!els.attest.checked : false,
         notes: els.notes ? els.notes.value.trim() : '',
         donationChoice: donationChoiceStr,

@@ -36,7 +36,7 @@ var ORDERS_HEADERS = [
   'Timestamp', 'Order ID', 'Status', 'House Number', 'Tier Color', 'Orientation',
   'Driveway Ft', 'Marker Texts', 'Arrow Sign', 'Arrow Direction (dept)', 'Mounting',
   'Post Included', 'Shared With Numbers', 'Full Name', 'Property Address', 'Phone',
-  'Email', 'Preferred Contact', 'Rental/2nd Property', 'In-District Attest',
+  'Email', 'Preferred Contact', 'In-District Attest',
   'Placement Notes', 'Est Signs+Hardware $', 'Donation Pledged $', 'Est Total Due $',
   'Actual Vendor Total $ (dept)', 'Donation Received $ (dept)', 'Email Status', 'Internal Notes'
 ];
@@ -74,7 +74,6 @@ function sanitizeOrder(data) {
   order.phone = typeof data.phone === 'string' ? data.phone.trim() : '';
   order.email = typeof data.email === 'string' ? data.email.trim() : '';
   order.contactMethod = String(data.contactMethod || '');
-  order.rentalProperty = data.rentalProperty === true;
   order.inDistrictAttest = data.inDistrictAttest === true;
   order.notes = typeof data.notes === 'string' ? data.notes.trim() : '';
   // Guard against numeric 0 (a valid, falsy donationChoice value) collapsing to ''.
@@ -284,7 +283,7 @@ function makeOrderId(uuidStr) {
 }
 
 /**
- * Builds the 28-element row for the Orders tab (columns A–AB), in the
+ * Builds the 27-element row for the Orders tab (columns A–AA), in the
  * exact order of ORDERS_HEADERS / CONTRACT.md section 9.
  *
  * `order` = sanitized order object (see sanitizeOrder).
@@ -312,7 +311,6 @@ function buildRow(order, derived, now) {
     order.phone,                                                // Phone
     order.email,                                                // Email
     order.contactMethod,                                        // Preferred Contact
-    order.rentalProperty ? 'Yes' : 'No',                        // Rental/2nd Property
     order.inDistrictAttest ? 'Yes' : 'No',                      // In-District Attest
     order.notes,                                                // Placement Notes
     derived.signsTotal,                                         // Est Signs+Hardware $
@@ -653,7 +651,6 @@ function sendDeptEmail_(order, derived) {
   lines.push('Phone: ' + order.phone);
   lines.push('Email: ' + order.email);
   lines.push('Preferred contact method: ' + order.contactMethod);
-  lines.push('Rental/2nd property: ' + (order.rentalProperty ? 'Yes' : 'No'));
   lines.push('In-district attest: ' + (order.inDistrictAttest ? 'Yes' : 'No'));
   if (order.notes) {
     lines.push('Placement notes: ' + order.notes);
