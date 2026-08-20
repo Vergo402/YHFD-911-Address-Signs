@@ -132,12 +132,17 @@ Order ID: `"YH-" + 6 chars from Utilities.getUuid() uppercased alphanumerics`.
 2. Lock `submitbtn` (spinner text "Sending…").
 3. `fetch(endpoint, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(payload), redirect:"follow"})`.
 4. `ok:true` → hide form, show `successpanel` populated from **response** (server truth). `ok:false` → map errors to fields, unlock.
-5. fetch throws → retry once `mode:"no-cors"` same body/uuid → show `softpanel` ("submitted — if no confirmation email within 15 minutes, contact us"). 
-6. Mock mode (`endpoint===""` or `?mock=1`): 800 ms fake round-trip computing the response locally with client math; banner "TEST MODE — order not sent".
+5. fetch throws → retry once `mode:"no-cors"` same body/uuid → show `softpanel`. Because a no-cors response is opaque, the panel must NEVER assert the order succeeded: it says the order could not be confirmed, names the confirmation email as the only proof, and gives a way to reach a human (`config.contactFallback`, falling back to the department website when unset).
+6. **Unconfigured guard:** empty `endpoint` on a non-localhost origin is a broken deployment, not mock mode. The form is hidden and replaced with a notice telling the resident to phone the department. Without this, a live site with an unset endpoint silently swallows every order behind a "TEST MODE" banner a resident cannot interpret. 
+7. Mock mode (`?mock=1`, or empty `endpoint` **on localhost only**): 800 ms fake round-trip computing the response locally with client math; banner "TEST MODE — order not sent".
 
 ## 8. Server flow (Code.gs doPost)
 
-parse → honeypot (fake success + Quarantine) → elapsedMs gate → validate (errors out) → UUID cache hit? replay cached success (6 h) → email+address hash dedupe (10 min) → LockService + CacheService global counter (max 15/10 min → `{ok:false,errors:[{field:"",message:"We're receiving a lot of orders — please try again in a few minutes."}]}`) → compute items/totals from CONFIG prices → append row to `Orders` (Email Status "pending") → send dept email, resident email (each try/caught) → update Email Status → cache success by uuid → return. Outer try/catch: on crash after parse, email raw payload to dept. CONFIG block at top: `DEPT_EMAIL`, `PRICES` (mirror of config.js), `SHEET_ORDERS="Orders"`, `SHEET_QUARANTINE="Quarantine"`, `THROTTLE {windowSec:600,max:15}`, `MIN_ELAPSED_MS 5000`.
+parse → honeypot (fake success + Quarantine) → elapsedMs gate → validate (errors out) → UUID cache hit? replay cached success (6 h) → email+address hash dedupe (10 min) → LockService + CacheService global counter (max 15/10 min → `{ok:false,errors:[{field:"",message:"We're receiving a lot of orders — please try again in a few minutes."}]}`) → compute items/totals from CONFIG prices → append row to `Orders` (Email Status "pending") → send dept email, resident email (each try/caught) → update Email Status → cache success by uuid → return. Outer try/catch: on crash after parse, email raw payload to dept. CONFIG block at top: `DEPT_EMAIL`, `PRICES` (mirror of config.js), `SHEET_ORDERS="Orders"`, `SHEET_QUARANTINE="Quarantine"`, `THROTTLE {windowSec:600, max:60, perEmailMax:3, perEmailWindowSec:3600}`, `MIN_ELAPSED_MS 5000`.
+
+Throttling is two-tier: a per-email limit (3/hour) so one source flooding degrades only its own experience, and a global limit (60/10min) as a backstop for the Sheet. A global limit tight enough to stop one abuser would also lock out every other resident, which is why the global figure sits well above any believable real burst.
+
+`weeklyHeartbeat()` runs on a weekly time-based trigger and emails the department a summary (new orders, orders awaiting action, rows needing measurement or an arrow direction). Its purpose is to make silence detectable: a broken portal produces no orders, which is indistinguishable from a quiet week.
 
 ## 9. Orders sheet columns (A→AA, 27 columns, exact order; appendRow must match)
 

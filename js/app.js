@@ -742,9 +742,32 @@
       }
     }
 
+    function hasEndpoint() {
+      return !!(CFG.endpoint && CFG.endpoint.length);
+    }
+
+    // A developer machine, where an unconfigured endpoint means "not wired up
+    // yet" rather than "launched broken".
+    function isLocalDev() {
+      var h = (typeof location !== 'undefined' && location.hostname) || '';
+      return h === 'localhost' || h === '127.0.0.1' || h === '' || h === '[::1]';
+    }
+
     function isMockMode() {
       var qs = (typeof location !== 'undefined' && location.search) || '';
-      return /[?&]mock=1(&|$)/.test(qs) || !(CFG.endpoint && CFG.endpoint.length);
+      if (/[?&]mock=1(&|$)/.test(qs)) return true;      // explicitly asked for
+      return !hasEndpoint() && isLocalDev();            // unconfigured, but local
+    }
+
+    /**
+     * Live site with no endpoint configured. Previously this fell into mock
+     * mode, so a resident on the real site would fill in the whole form, see
+     * "TEST MODE — order not sent" (which means nothing to them), and get a
+     * confirmation screen for an order that went nowhere. Now it refuses to
+     * take an order it cannot deliver.
+     */
+    function isUnconfigured() {
+      return !hasEndpoint() && !isLocalDev();
     }
 
     // index.html nests #successpanel and #softpanel INSIDE <form id="orderform">
@@ -774,6 +797,34 @@
       // visible on the success/soft panels too, instead of disappearing
       // along with the rest of the form fields.
       els.orderform.parentNode.insertBefore(b, els.orderform);
+    }
+
+    /**
+     * How a resident can reach a human. Never returns an empty string: a
+     * message that says "get in touch" and then names no way to do it is
+     * worse than useless at the moment it matters most.
+     */
+    function contactSentence() {
+      if (CFG.contactFallback) return 'call or email us at ' + CFG.contactFallback;
+      console.warn('[YHEC1 portal] config.contactFallback is empty — residents who hit a ' +
+        'submission problem get a website link instead of a phone number. Set it before launch.');
+      return 'contact us through yorktownfire.org';
+    }
+
+    function showUnconfiguredNotice() {
+      if (document.getElementById('setupbanner') || !els.orderform || !els.orderform.parentNode) return;
+      var b = document.createElement('div');
+      b.id = 'setupbanner';
+      b.setAttribute('role', 'alert');
+      b.textContent = "This order form isn't finished being set up, so it can't take orders yet. " +
+        'Please ' + contactSentence() + ' to order a sign.';
+      b.style.cssText = 'background:#FCEBEB;color:#791F1F;border:1px solid #A32D2D;' +
+        'border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:14px;' +
+        'font-weight:500;line-height:1.5;';
+      els.orderform.parentNode.insertBefore(b, els.orderform);
+      setOrderFormVisible(false);
+      console.error('[YHEC1 portal] PORTAL_CONFIG.endpoint is empty on a live origin. ' +
+        'Paste the Apps Script /exec URL into js/config.js — no order can be submitted until you do.');
     }
 
     function mockOrderId() {
@@ -848,7 +899,7 @@
       if (!els.softpanel) return;
       var fbEl = document.getElementById('softContactFallback');
       if (fbEl) {
-        fbEl.textContent = CFG.contactFallback ? ('reach us at ' + CFG.contactFallback + ', or ') : '';
+        fbEl.textContent = contactSentence();
       } else {
         console.warn('[YHEC1 portal] expected element #softContactFallback inside #softpanel was not found.');
       }
@@ -892,6 +943,8 @@
     function onSubmit(evt) {
       if (evt && evt.preventDefault) evt.preventDefault();
       if (submitInFlight) return;
+      // Belt and braces — init already blocks the form in this state.
+      if (isUnconfigured()) { showUnconfiguredNotice(); return; }
 
       var payload = buildPayload();
       var errors = window.PORTAL_TEST.validate(payload);
@@ -930,7 +983,11 @@
     // 5. INIT
     // ---------------------------------------------------------------------
 
-    if (isMockMode()) ensureMockBanner();
+    if (isUnconfigured()) {
+      showUnconfiguredNotice();
+    } else if (isMockMode()) {
+      ensureMockBanner();
+    }
 
     // Show when the price table was last checked, so the note can't silently
     // claim "current" prices years after anyone verified them.

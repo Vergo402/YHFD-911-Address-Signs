@@ -167,9 +167,41 @@ Copy this list somewhere (email, notebook) and check it off before telling the d
 - [ ] Web app deployed with **Execute as: Me**, **Who has access: Anyone**.
 - [ ] Visiting the `/exec` URL directly in a browser shows `{"ok":true,...}`.
 - [ ] `js/config.js` `endpoint` field is set to that `/exec` URL (confirmed via developer or GitHub web editor).
+- [ ] **`js/config.js` `contactFallback` is set to a real phone number or email.** This is the number a resident is shown when a submission fails. Left empty, they are told to "contact us" with no way to do it — at the one moment it matters most.
 - [ ] `js/config.js` prices match `Code.gs` prices.
+- [ ] **Weekly check email set up** (see "Weekly check email" below) and a first run sent successfully.
+- [ ] Confirmed the live site does **not** show a yellow "TEST MODE" banner. If it does, `endpoint` is still empty and no order will reach you.
 - [ ] One full test order was submitted on the **live site** (not test mode) and produced: a new Sheet row, a department email, and a resident confirmation email.
 - [ ] Test row removed from the `Orders` tab (optional but tidy).
 - [ ] The saved `/exec` URL is stored somewhere safe in case it's needed again (see `RUNBOOK.md` for what to do if it's lost).
+
+---
+
+## Weekly check email
+
+Set this up once. It emails the department a short summary every week: how many
+orders came in, and what is waiting on you.
+
+Its real purpose is not the summary. It is to make **silence** noticeable. If the
+portal ever breaks — a bad redeploy, a revoked account, a fault on the website —
+orders simply stop arriving, which looks exactly like a quiet week. Nobody
+notices for months. If this email stops arriving, something is wrong.
+
+1. In the Sheet, go to **Extensions → Apps Script**.
+2. In the left sidebar, click the **clock icon** (Triggers).
+3. Click **+ Add Trigger** (bottom right).
+4. Set the four dropdowns:
+   - Choose which function to run: **weeklyHeartbeat**
+   - Which runs at deployment: **Head**
+   - Select event source: **Time-driven**
+   - Select type of time based trigger: **Week timer** → pick a day and an hour
+     (Monday morning works well)
+5. **Save.** You may be asked to approve permissions again — approve them.
+6. Test it now rather than waiting a week: back in the editor, choose
+   **weeklyHeartbeat** from the function dropdown and click **Run**. Check the
+   department inbox for a mail titled "YHEC1 sign portal — weekly check".
+
+If that email arrives, you are done. Tell whoever watches the department inbox
+what it is, and that its absence is the alarm.
 
 You're done. Hand off `RUNBOOK.md` to whoever will process orders day-to-day.

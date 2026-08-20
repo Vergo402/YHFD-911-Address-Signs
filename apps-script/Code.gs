@@ -26,7 +26,11 @@ var CONFIG = {
   PRICES: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },
   SHEET_ORDERS: 'Orders',
   SHEET_QUARANTINE: 'Quarantine',
-  THROTTLE: { windowSec: 600, max: 15 },
+  // Two limits. The per-email one stops a single source from flooding; the
+  // global one is a backstop for the Sheet. The global figure is deliberately
+  // well above any believable real-world burst, because a global limit set
+  // tight enough to stop one abuser also locks out every other resident.
+  THROTTLE: { windowSec: 600, max: 60, perEmailMax: 3, perEmailWindowSec: 3600 },
   MIN_ELAPSED_MS: 5000
 };
 // ============ END CONFIG ============
@@ -439,6 +443,19 @@ function doPost(e) {
       // (not a true sliding window, but a real "max per windowSec"
       // — unlike a single self-refreshing key, a quiet stretch doesn't
       // get penalized by orders from the previous window).
+      // Per-email limit first: one source flooding should degrade its own
+      // experience, not everyone's.
+      var emailKey = 'te_' + md5Hex_(order.email.toLowerCase()) + '_' +
+        Math.floor(Date.now() / 1000 / CONFIG.THROTTLE.perEmailWindowSec);
+      var emailCount = Number(cache.get(emailKey) || 0);
+      if (emailCount >= CONFIG.THROTTLE.perEmailMax) {
+        cache.remove(dedupeKey);
+        return jsonOut({
+          ok: false,
+          errors: [{ field: '', message: "You've placed several orders from this email address already. If you need another sign, please contact us directly so we can help." }]
+        });
+      }
+
       var countKey = 'throttle_' + Math.floor(Date.now() / 1000 / CONFIG.THROTTLE.windowSec);
       var current = Number(cache.get(countKey) || 0);
       if (current >= CONFIG.THROTTLE.max) {
@@ -449,6 +466,7 @@ function doPost(e) {
         });
       }
       cache.put(countKey, String(current + 1), CONFIG.THROTTLE.windowSec);
+      cache.put(emailKey, String(emailCount + 1), CONFIG.THROTTLE.perEmailWindowSec);
 
       // Compute — server is authoritative, client totals are never trusted.
       var markers = computeMarkers(order.tier, order.drivewayLengthFt, order.wantMarkers);
@@ -722,6 +740,90 @@ function sendResidentEmail_(order, derived) {
     name: 'Yorktown Heights Engine Co. No. 1',
     replyTo: CONFIG.DEPT_EMAIL
   });
+}
+
+// ---------------- Weekly heartbeat ----------------
+
+/**
+ * Emails the department a short weekly summary. Its real job is to make
+ * SILENCE detectable: if the portal breaks — bad redeploy, revoked account,
+ * a JS error on the site — orders simply stop, which looks exactly like a
+ * quiet week. Nobody would notice for months.
+ *
+ * It deliberately carries useful content (what's waiting on the department)
+ * rather than a bare "still alive" ping, because a mail that people actually
+ * read is a mail whose absence gets noticed.
+ *
+ * Set up as a weekly time-based trigger — see docs/SETUP.md.
+ */
+function weeklyHeartbeat() {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_ORDERS);
+    if (!sheet) {
+      MailApp.sendEmail({
+        to: CONFIG.DEPT_EMAIL,
+        subject: 'YHEC1 sign portal — PROBLEM: Orders tab missing',
+        body: 'The weekly check could not find a tab named "' + CONFIG.SHEET_ORDERS + '".\n' +
+          'Orders cannot be recorded until that tab exists with its original name.',
+        name: 'Yorktown Heights Engine Co. No. 1'
+      });
+      return;
+    }
+
+    var last = sheet.getLastRow();
+    var total = Math.max(0, last - 1);
+    var recent = 0, waiting = 0, needMeasure = 0, needArrowDir = 0;
+
+    if (last >= 2) {
+      // A..J covers Timestamp, Order ID, Status, House Number, Tier Color,
+      // Orientation, Driveway Ft, Marker Texts, Arrow Sign, Arrow Direction.
+      var rows = sheet.getRange(2, 1, last - 1, 10).getValues();
+      var cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+      for (var i = 0; i < rows.length; i++) {
+        var ts = rows[i][0], status = String(rows[i][2] || ''),
+            tier = String(rows[i][4] || ''), arrow = String(rows[i][8] || ''),
+            arrowDir = String(rows[i][9] || '');
+        if (ts && ts.getTime && ts.getTime() >= cutoff) recent++;
+        var open = (status === 'New' || status === 'Contacted');
+        if (open) {
+          waiting++;
+          if (tier === 'unsure') needMeasure++;
+          if (arrow === 'Yes' && !arrowDir.trim()) needArrowDir++;
+        }
+      }
+    }
+
+    var lines = [];
+    lines.push('The 911 sign portal is up and recording orders.');
+    lines.push('');
+    lines.push('New orders in the last 7 days: ' + recent);
+    lines.push('Orders total: ' + total);
+    lines.push('');
+    lines.push('Waiting on the department: ' + waiting + ' (status New or Contacted)');
+    if (needMeasure) lines.push('  - ' + needMeasure + ' need the driveway measured (Tier Color is "unsure")');
+    if (needArrowDir) lines.push('  - ' + needArrowDir + ' need an Arrow Direction set before ordering');
+    lines.push('');
+    lines.push('If this email ever stops arriving, assume the portal is broken and check it — ');
+    lines.push('a silent portal looks exactly like a quiet week.');
+
+    MailApp.sendEmail({
+      to: CONFIG.DEPT_EMAIL,
+      subject: 'YHEC1 sign portal — weekly check (' + recent + ' new, ' + waiting + ' waiting)',
+      body: lines.join('\n'),
+      name: 'Yorktown Heights Engine Co. No. 1',
+      replyTo: CONFIG.DEPT_EMAIL
+    });
+  } catch (err) {
+    try {
+      MailApp.sendEmail({
+        to: CONFIG.DEPT_EMAIL,
+        subject: 'YHEC1 sign portal — weekly check FAILED',
+        body: 'The weekly check itself errored: ' + (err && err.message ? err.message : err) +
+          '\n\nThe portal may still be fine, but this needs a look.',
+        name: 'Yorktown Heights Engine Co. No. 1'
+      });
+    } catch (ignore) {}
+  }
 }
 
 // ---------------- Setup / OAuth-grant helper ----------------

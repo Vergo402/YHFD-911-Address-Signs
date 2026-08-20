@@ -38,6 +38,19 @@ Each row is one order. Columns you'll touch most as you work an order:
 - **Internal Notes** — free text for anything unusual. The system itself writes a note here automatically when a 5-digit house number is on a vertical sign (a tight fit) — look out for `⚠ 5-character house number on vertical sign` and double check that sign will actually fit before ordering.
 - **Email Status** — automatic; shows whether the confirmation emails sent successfully. You shouldn't need to touch this.
 
+### The weekly check email
+
+Every week the portal emails the department a short summary: new orders in the
+last seven days, and what is waiting on you. Skim it and move on.
+
+**The important part is when it does *not* arrive.** If the portal breaks, orders
+just stop, which looks exactly like a quiet week — you would not otherwise find
+out for months. So treat a missing weekly email as a fault: open the site, submit
+a test order in a browser, and check that a row appears. If it doesn't, see the
+troubleshooting table at the end of this document.
+
+---
+
 **Never rename the `Orders` or `Quarantine` tabs.** The script that runs the website looks for those tab names exactly — renaming either one will break the site silently (orders will still submit, but nothing will show up where you're looking).
 
 ---

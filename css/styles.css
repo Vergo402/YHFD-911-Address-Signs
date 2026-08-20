@@ -680,6 +680,8 @@ fieldset {
   color: var(--text-warning);
 }
 .soft-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+.soft-panel-strong { margin-top: 8px !important; color: var(--text-primary) !important; }
+.soft-panel-strong strong { font-weight: 500; }
 
 /* ---------- footer ---------- */
 
