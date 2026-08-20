@@ -3,7 +3,7 @@
  * Pure order-math + validation live on window.PORTAL_TEST so they can be
  * exercised from a console or from Node with a `window = {}` stub, and the
  * UI code below calls those SAME functions — no duplicated math.
- * Binding spec: docs/CONTRACT.md. Binding visuals: docs/mockup-v4.html.
+ * Binding spec: docs/CONTRACT.md. Binding visuals: docs/mockup-v5.html.
  */
 (function () {
   'use strict';
@@ -252,10 +252,12 @@
     var COLORS = {
       green: { bg: '#156B34', fg: '#fff', name: 'Green' },
       yellow: { bg: '#E8B60A', fg: '#111', name: 'Yellow' },
-      red: { bg: '#A32D2D', fg: '#fff', name: 'Red' },
+      red: { bg: '#B3181C', fg: '#fff', name: 'Red' },
       // Neutral grey stands in until the department measures the driveway —
-      // deliberately not one of the three real sign colours.
-      unsure: { bg: '#B4B2A9', fg: '#2C2C2A', name: '' }
+      // deliberately not one of the three real sign colours. Matches the
+      // .tier-swatch-unsure grey in css/styles.css so the preview and the
+      // tier card agree.
+      unsure: { bg: '#666', fg: '#fff', name: '' }
     };
 
     // -- Defensive element lookup: warn once per missing id, never throw. --
@@ -373,7 +375,7 @@
       return Number(donationState.choice) || 0;
     }
 
-    // -- live preview (matches docs/mockup-v4.html render() exactly) --
+    // -- live preview (matches docs/mockup-v5.html) --
     function updatePreview() {
       if (!els.signprev) return;
       var tier = getSelectedRadioValue('tier') || 'green';
@@ -424,7 +426,7 @@
             '<span>' + escapeHtml(it.label) + '</span><span style="flex:none;">$' + fmtUSD(it.amount) + '</span></div>';
         }).join('');
         els.summary.innerHTML = rows +
-          '<div style="display:flex;justify-content:space-between;border-top:0.5px solid var(--border,#d7d5cd);' +
+          '<div style="display:flex;justify-content:space-between;border-top:0.5px solid var(--border,#2A2A5C);' +
           'margin-top:6px;padding-top:6px;font-weight:500;"><span>Your signs &amp; hardware</span>' +
           '<span>$' + fmtUSD(totals.signsTotal) + '</span></div>';
       }
@@ -546,9 +548,9 @@
         b.classList.toggle('don-active', isSelected);
         b.classList.toggle('selected', isSelected);
         if (isSelected) {
-          b.style.borderColor = 'var(--border-accent,#378ADD)';
-          b.style.background = 'var(--bg-accent,#E6F1FB)';
-          b.style.color = 'var(--text-accent,#185FA5)';
+          b.style.borderColor = 'var(--border-accent,#FFCC00)';
+          b.style.background = 'var(--bg-accent,#FFCC00)';
+          b.style.color = 'var(--text-accent,#000033)';
         } else {
           b.style.borderColor = '';
           b.style.background = '';
@@ -790,9 +792,10 @@
       var b = document.createElement('div');
       b.id = 'mockbanner';
       b.textContent = 'TEST MODE — order not sent';
-      b.style.cssText = 'background:#FFF4CE;color:#7A5B00;border:1px solid #E8B60A;' +
+      b.style.cssText = 'background:var(--navy,#000033);color:var(--warn-text,#FFD879);' +
+        'border:1px solid var(--gold,#FFCC00);' +
         'border-radius:8px;padding:8px 14px;margin-bottom:16px;font-size:13px;' +
-        'font-weight:500;text-align:center;';
+        'font-weight:600;text-align:center;';
       // Inserted as a sibling before the form (not inside it) so it stays
       // visible on the success/soft panels too, instead of disappearing
       // along with the rest of the form fields.
@@ -818,9 +821,10 @@
       b.setAttribute('role', 'alert');
       b.textContent = "This order form isn't finished being set up, so it can't take orders yet. " +
         'Please ' + contactSentence() + ' to order a sign.';
-      b.style.cssText = 'background:#FCEBEB;color:#791F1F;border:1px solid #A32D2D;' +
+      b.style.cssText = 'background:var(--err-bg,#3A0F12);color:var(--err,#FF9B9B);' +
+        'border:1px solid var(--red,#B3181C);' +
         'border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:14px;' +
-        'font-weight:500;line-height:1.5;';
+        'font-weight:600;line-height:1.5;';
       els.orderform.parentNode.insertBefore(b, els.orderform);
       setOrderFormVisible(false);
       console.error('[YHEC1 portal] PORTAL_CONFIG.endpoint is empty on a live origin. ' +

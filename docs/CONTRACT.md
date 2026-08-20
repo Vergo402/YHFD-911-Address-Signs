@@ -1,6 +1,6 @@
 # Interface Contract — YHEC1 911 Sign Portal
 
-Single source of truth for every file in this repo. If a piece disagrees with this document, the piece is wrong. Approved mockup: `docs/mockup-v4.html` (binding visual target).
+Single source of truth for every file in this repo. If a piece disagrees with this document, the piece is wrong. Approved mockup: `docs/mockup-v5.html` (binding visual target).
 
 ## 1. DOM contract (index.html ⇄ app.js)
 
@@ -42,6 +42,16 @@ Radio groups by `name`: `orient` (values `v`,`h`; default `v`), `tier` (values `
 Honeypot: `<input type="text" name="contact_website" id="contact_website" tabindex="-1" autocomplete="off" aria-hidden="true">` inside a `.hp` wrapper positioned off-screen via CSS (not `display:none` — bots skip those).
 
 Per-field inline errors: each field's wrapper may contain `<p class="field-err" data-for="<id>">`; app.js fills/toggles them.
+
+### 1a. Department-theme structural elements (visual only, not read by app.js)
+
+These elements exist purely to make the portal visually match yorktownfire.org per `docs/mockup-v5.html`. app.js does not read or write any of them, so they carry no ID contract of their own — but they must not be removed or collapse the header, since the header still needs to host the elements listed in section 1.
+
+- **Raster banner** — `assets/dept-banner.jpg` (1200×220), the department's full banner image, shown at ≥640px viewport width.
+- **CSS-built banner fallback** — below 640px the raster banner is hidden (the wordmark stops being legible at phone widths) and replaced with a CSS-rebuilt banner (Alfa Slab One wordmark) plus `assets/dept-patch.jpg` (165×190), the department patch, shown alongside it.
+- **Tagline** — a 'Playfair Display' italic 600 display line under the banner, matching the mockup's measured type.
+- **Divider** — `assets/dept-divider.jpg` (960×35), the gold emblem rule, placed as a section divider per the mockup.
+- Provenance and re-fetch URLs for all three department images are documented in `assets/README.md`.
 
 ## 2. config.js
 

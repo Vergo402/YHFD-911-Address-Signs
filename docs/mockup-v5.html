@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup v5 — binding visual target</title>
+<!--
+  APPROVED 2026-08-20. This supersedes mockup-v4.html and is the binding
+  visual target for index.html + css/styles.css.
+
+  Direction: match yorktownfire.org so a resident arriving from the department
+  site lands somewhere that plainly belongs to it. Every colour and font below
+  was measured off the live site, not invented:
+
+    #333333  page ground (their body bg, faintly textured)
+    #000033  panel / nav navy (their left-nav cell)
+    #FFCC00  gold accent (their link colour)
+    #FFFFFF / #E0E0E0  text
+    #B3181C  banner red (matched to their header raster)
+    Montserrat 700  their nav face — kept for continuity, not novelty
+    serif italic    echoes their "ALL VOLUNTEER FOR 117 YEARS" tagline
+
+  Real department assets are used for the banner, patch and divider; below
+  ~640px the banner falls back to a CSS rebuild because the raster wordmark
+  stops being legible at phone widths.
+
+  The headlight sweep on the sign preview is deliberate: it shows what a
+  retroreflective sign actually does at night, which is the product's whole
+  point. It is disabled under prefers-reduced-motion.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
+<style>
+:root{--ground:#333;--navy:#000033;--gold:#FFCC00;--white:#fff;--soft:#E0E0E0;
+ --red:#B3181C;--rule:#2A2A5C;--field:#050520;--green:#156B34;--yellow:#E8B60A;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);
+ background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 2px,transparent 2px 5px);
+ font-family:Montserrat,Tahoma,Verdana,Arial,sans-serif;color:var(--white);}
+.wrap{max-width:1000px;margin:0 auto;}
+.banner img{display:block;width:100%;height:auto;border-bottom:3px solid var(--gold);}
+.banner-css{display:none;background:linear-gradient(180deg,#7E0E11,var(--red) 45%,#6E0C0F);
+ border-bottom:3px solid var(--gold);padding:14px 16px;align-items:center;justify-content:space-between;gap:12px;}
+.banner-css .wm{font-family:'Alfa Slab One',Georgia,serif;font-size:23px;line-height:1;color:var(--gold);
+ text-shadow:2px 2px 0 #4A0709,-1px -1px 0 #4A0709,1px -1px 0 #4A0709,-1px 1px 0 #4A0709;}
+.banner-css .wm small{display:block;font-family:Montserrat,sans-serif;font-size:9px;font-weight:700;
+ letter-spacing:.28em;color:var(--white);text-shadow:none;margin-top:5px;}
+.banner-css img{width:52px;height:auto;border:0;flex:none;border-radius:4px;}
+@media(max-width:639px){.banner img{display:none}.banner-css{display:flex}}
+.tagline{text-align:center;padding:22px 16px 4px;}
+.tagline em{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:600;font-size:24px;}
+.divider{display:block;width:100%;max-width:760px;margin:10px auto 22px;height:auto;opacity:.9;}
+.body{padding:0 14px 26px;}
+.hero{background:var(--navy);border:1px solid var(--rule);border-radius:6px;padding:22px 18px;
+ display:grid;grid-template-columns:1fr;gap:20px;}
+.h1{font-family:'Playfair Display',Georgia,serif;font-size:32px;line-height:1.08;margin:0 0 12px;}
+.h1 i{color:var(--gold);}
+.lede{font-size:13.5px;line-height:1.7;color:var(--soft);margin:0 0 16px;max-width:46ch;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+ border:1px solid var(--gold);color:var(--gold);border-radius:3px;padding:6px 11px;}
+.stage{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.sign{position:relative;width:72px;height:216px;background:var(--green);border-radius:5px;padding:7px;
+ overflow:hidden;display:flex;align-items:center;justify-content:center;
+ box-shadow:0 0 0 1px rgba(255,255,255,.2),0 20px 40px -18px #000;}
+.sign i{position:absolute;inset:0;background:linear-gradient(105deg,transparent 34%,rgba(255,255,255,.6) 50%,transparent 66%);
+ transform:translateX(-130%);animation:sweep 5.6s cubic-bezier(.5,0,.3,1) .6s infinite;}
+@keyframes sweep{0%{transform:translateX(-130%)}22%{transform:translateX(130%)}100%{transform:translateX(130%)}}
+@media(prefers-reduced-motion:reduce){.sign i{animation:none;opacity:0}}
+.plate{border:2.5px solid #fff;border-radius:3px;width:100%;height:100%;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+.plate span{font-weight:800;font-size:30px;line-height:1;text-shadow:0 0 12px rgba(255,255,255,.35);}
+.cap{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);font-weight:600;text-align:center;}
+.sec{margin-top:18px;background:var(--navy);border:1px solid var(--rule);border-radius:6px;padding:20px 18px;}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:11px;border-bottom:1px solid var(--rule);}
+.sn{background:var(--gold);color:var(--navy);font-size:11px;font-weight:800;padding:3px 8px;border-radius:3px;}
+.st{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;}
+.row{display:grid;grid-template-columns:1fr;gap:14px;}
+.lab{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:7px;}
+input,select{width:100%;background:var(--field);border:1px solid var(--rule);border-radius:3px;color:var(--white);
+ font-family:Montserrat,sans-serif;font-size:16px;font-weight:600;padding:11px 13px;}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.seg{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;}
+.seg button{flex:1;background:var(--field);border:0;color:var(--soft);font-family:Montserrat,sans-serif;
+ font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:13px 8px;cursor:pointer;}
+.seg button.on{background:var(--gold);color:var(--navy);}
+.tiers{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px;}
+.tier{border:1px solid var(--rule);border-radius:3px;padding:12px 11px;background:var(--field);cursor:pointer;}
+.tier.on{border-color:var(--gold);background:#0D0D33;}
+.sw{height:5px;border-radius:1px;margin-bottom:9px;}
+.tn{font-size:12px;font-weight:700;display:block;}
+.ts{font-size:9.5px;letter-spacing:.1em;color:var(--soft);font-weight:600;}
+.led{margin-top:18px;border:1px solid var(--rule);border-radius:3px;background:var(--field);}
+.lr{display:flex;justify-content:space-between;gap:14px;padding:11px 14px;font-size:12.5px;color:var(--soft);border-bottom:1px solid var(--rule);}
+.lr b{color:var(--white);}
+.lt{display:flex;justify-content:space-between;align-items:baseline;padding:13px 14px;}
+.lt span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:700;}
+.lt b{font-size:22px;color:var(--gold);font-weight:800;}
+.cta{margin-top:16px;width:100%;background:var(--red);color:#fff;border:2px solid var(--gold);border-radius:4px;
+ padding:15px;font-size:12.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;}
+.foot{text-align:center;padding:18px;border-top:1px solid var(--rule);font-size:11px;color:var(--soft);}
+.foot a{color:var(--gold);}
+@media(min-width:640px){
+ .body{padding:0 24px 30px}
+ .hero{grid-template-columns:1.1fr .9fr;align-items:center;padding:26px}
+ .row{grid-template-columns:150px 1fr;align-items:end}
+ .tiers{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner"><img src="../assets/dept-banner.jpg" alt="Yorktown Heights Engine Company #1 — Fire, Rescue"></div>
+  <div class="banner-css">
+    <div class="wm">YORKTOWN HEIGHTS<small>ENGINE COMPANY #1</small></div>
+    <img src="../assets/dept-patch.jpg" alt="">
+  </div>
+
+  <div class="tagline"><em>All volunteer for 117 years</em></div>
+  <img class="divider" src="../assets/dept-divider.jpg" alt="">
+
+  <div class="body">
+    <div class="hero">
+      <div>
+        <h1 class="h1">Seconds count.<br><i>Help us find you.</i></h1>
+        <p class="lede">At 2 a.m. in the rain, a number painted on a curb is invisible. A reflective sign at the end of your driveway is not. We order it at cost, and our volunteers set it for you.</p>
+        <div class="chips"><span class="chip">Vendor cost — $43.15</span><span class="chip">Installation free</span></div>
+      </div>
+      <div class="stage">
+        <div class="sign"><div class="plate"><span>2</span><span>9</span><span>4</span><span>4</span></div><i></i></div>
+        <p class="cap">6″×18″ · Diamond grade · Two-sided</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sh"><span class="sn">01</span><span class="st">Your sign</span></div>
+      <div class="row">
+        <div><label class="lab">House number</label><input value="2944"></div>
+        <div><label class="lab">Orientation</label>
+          <div class="seg"><button class="on">Vertical</button><button>Horizontal</button></div></div>
+      </div>
+      <div class="tiers">
+        <div class="tier on"><div class="sw" style="background:var(--green)"></div><span class="tn">Under 150′</span><span class="ts">GREEN</span></div>
+        <div class="tier"><div class="sw" style="background:var(--yellow)"></div><span class="tn">150–1,000′</span><span class="ts">YELLOW</span></div>
+        <div class="tier"><div class="sw" style="background:var(--red)"></div><span class="tn">Over 1,000′</span><span class="ts">RED</span></div>
+        <div class="tier"><div class="sw" style="background:#666"></div><span class="tn">Not sure</span><span class="ts">WE MEASURE</span></div>
+      </div>
+      <div class="led">
+        <div class="lr"><span>Green bordered address sign — 2944</span><b>$34.91</b></div>
+        <div class="lr"><span>Mounting bracket, vertical</span><b>$8.24</b></div>
+        <div class="lt"><span>Due at installation</span><b>$43.15</b></div>
+      </div>
+      <button class="cta">Place my order</button>
+    </div>
+  </div>
+  <div class="foot">Yorktown Heights Engine Co. No. 1 · <a href="https://www.yorktownfire.org">yorktownfire.org</a></div>
+</div>
+</body>
+</html>

@@ -36,6 +36,10 @@ Residents who don't know their driveway length can pick **"Not sure — we'll me
 
 Vertical signs fit **4 characters** at 4″; horizontal fits 8. The portal warns residents with 5-digit numbers to choose horizontal.
 
+## Design
+
+The portal deliberately mirrors the look of [yorktownfire.org](https://yorktownfire.org) — navy/gold/red palette, Montserrat for UI, a serif italic tagline — so residents arriving from the department's own site recognize it as belonging to the department, not a third-party form. The department's real banner, patch, and divider images live in `assets/`, with re-fetch URLs and provenance documented in `assets/README.md`.
+
 ## Ownership & Access
 
 | Component | Owned By | Access |
