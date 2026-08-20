@@ -38,7 +38,7 @@ Vertical signs fit **4 characters** at 4″; horizontal fits 8. The portal warns
 
 ## Design
 
-The portal deliberately mirrors the look of [yorktownfire.org](https://yorktownfire.org) — navy/gold/red palette, Montserrat for UI, a serif italic tagline — so residents arriving from the department's own site recognize it as belonging to the department, not a third-party form. The department's real banner, patch, and divider images live in `assets/`, with re-fetch URLs and provenance documented in `assets/README.md`.
+The portal uses the department's real banner from [yorktownfire.org](https://yorktownfire.org) at the top of the page, linked back to that site, so residents arriving from it recognise where they are. Below the banner the page is a plain light layout in Libre Franklin — chosen for legibility, since most residents using this are reading a form about their own house number. A dark navy/gold theme matching the department site more literally was built and reverted on 2026-08-20: it looked right and read badly. The banner image lives in `assets/`, with re-fetch URLs in `assets/README.md`.
 
 ## Ownership & Access
 

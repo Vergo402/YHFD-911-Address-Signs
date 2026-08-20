@@ -1,52 +1,30 @@
 /* ============================================================
    YHEC1 911 Address Sign Portal — styles
-   Retheme to match yorktownfire.org. Palette, fonts and structure
-   are the binding target in docs/mockup-v5.html — do not redesign.
+   Mobile-first. Colors match approved mockup v4.
    ============================================================ */
 
-/* Fonts (Alfa Slab One, Montserrat 400/600/700/800, Playfair Display
-   italic+upright 600) are loaded via <link> in index.html's <head>, not
-   @import here — @import is render-blocking and would delay first paint. */
-
 :root {
-  /* -- exact department palette -- */
-  --ground: #333;
-  --navy: #000033;
-  --field: #050520;
-  --rule: #2A2A5C;
-  /* Perceivable boundary for form controls specifically — see the
-     input/select/textarea rule below. */
-  --field-border: #5A5A8C;
-  --gold: #FFCC00;
-  --white: #fff;
-  --soft: #E0E0E0;
-  --red: #B3181C;
-  --green: #156B34;
-  --yellow: #E8B60A;
+  --surface-1: #f4f3ef;
+  --surface-2: #fff;
+  --border: #d7d5cd;
+  --border-strong: #b9b7ae;
+  --border-accent: #378ADD;
+  --bg-accent: #E6F1FB;
+  --text-accent: #185FA5;
+  --bg-success: #EAF3DE;
+  --text-success: #3B6D11;
+  --text-primary: #1a1a18;
+  --text-secondary: #5f5e5a;
+  --text-muted: #6e6c60; /* darkened from mockup's #8a887f to clear 4.5:1 AA on white at small sizes */
+  --bg-warning: #FAEEDA;
+  --border-warning: #EF9F27;
+  --text-warning: #854F0B;
+  --text-danger: #A32D2D;
+  --radius: 8px;
 
-  /* -- utility tones derived from the palette for UI states the mockup's
-     fragment doesn't show (errors, warnings, success). Lightened so each
-     clears AA text contrast on --navy/--field; never used as a fill next to
-     the real sign colours, so they can't be mistaken for a tier. -- */
-  --err: #FF9B9B;
-  --err-bg: #3A0F12;
-  --warn-text: #FFD879;
-  --ok-text: #8FE3A6;
-
-  color-scheme: dark;
-
-  /* -- compatibility aliases --
-     app.js sets a handful of inline styles as a belt-and-braces fallback
-     (see its "donation buttons" comment) using var(--name, <light-theme
-     hex>) so "the correct look renders no matter which class name wins."
-     Defining these names here — instead of leaving them unset — means the
-     var() resolves to the dark theme instead of silently falling through
-     to the old light-theme literal, which inline styles would otherwise
-     win over any class rule in this file. */
-  --border-accent: var(--gold);
-  --bg-accent: var(--gold);
-  --text-accent: var(--navy);
-  --border: var(--rule);
+  --tier-green: #156B34;
+  --tier-yellow: #E8B60A;
+  --tier-red: #A32D2D;
 }
 
 * { box-sizing: border-box; }
@@ -55,14 +33,13 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: Montserrat, Tahoma, Verdana, Arial, sans-serif;
-  color: var(--white);
-  background: var(--ground);
-  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.018) 0 2px, transparent 2px 5px);
+  font-family: "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--text-primary);
+  background: var(--surface-1);
   overflow-x: hidden;
 }
 
-a { color: var(--gold); }
+a { color: var(--text-accent); }
 
 .sr-only {
   position: absolute;
@@ -74,32 +51,24 @@ a { color: var(--gold); }
   border: 0;
 }
 
-/* Native UA hidden semantics beat any author `display` rule below only when
-   nothing more specific overrides it — several rules in this sheet target
-   these same elements by id for layout. Without this, a hidden panel that
-   also has an id-selector `display:flex` rule would render open on load. */
-[hidden] { display: none !important; }
-
-/* focus visibility — every interactive control gets a visible gold ring;
-   the browser default is nearly invisible on this dark ground. */
+/* focus visibility */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 3px solid var(--border-accent);
   outline-offset: 2px;
 }
 
 /* ---------- noscript banner ---------- */
 
 .noscript-banner {
-  background: var(--red);
+  background: var(--text-danger);
   color: #fff;
   text-align: center;
   padding: 12px 16px;
   font-size: 14px;
-  border-bottom: 3px solid var(--gold);
 }
 .noscript-banner a { color: #fff; text-decoration: underline; }
 
@@ -114,121 +83,67 @@ textarea:focus-visible {
   overflow: hidden;
 }
 
-/* ---------- page shell ---------- */
+/* ---------- layout shell ---------- */
 
 .page {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-/* ---------- banner ---------- */
-
-.banner-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 3px solid var(--gold);
-}
-
-.banner-css {
-  display: none;
-  background: linear-gradient(180deg, #7E0E11, var(--red) 45%, #6E0C0F);
-  border-bottom: 3px solid var(--gold);
-  padding: 14px 16px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.banner-css-wm {
-  font-family: 'Alfa Slab One', Georgia, serif;
-  font-size: 23px;
-  line-height: 1;
-  color: var(--gold);
-  text-shadow: 2px 2px 0 #4A0709, -1px -1px 0 #4A0709, 1px -1px 0 #4A0709, -1px 1px 0 #4A0709;
-}
-.banner-css-wm small {
-  display: block;
-  font-family: Montserrat, Tahoma, Verdana, Arial, sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .28em;
-  color: var(--white);
-  text-shadow: none;
-  margin-top: 5px;
-}
-.banner-css-patch {
-  width: 52px;
-  height: auto;
-  border: 0;
-  border-radius: 4px;
-  flex: none;
-}
-
-@media (max-width: 639px) {
-  .banner-img { display: none; }
-  .banner-css { display: flex; }
-}
-
-/* ---------- tagline + divider ---------- */
-
-.tagline {
-  text-align: center;
-  padding: 22px 16px 4px;
-  margin: 0;
-}
-.tagline em {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-weight: 600;
-  font-size: clamp(18px, 5.2vw, 24px);
-}
-
-.divider {
-  display: block;
-  width: 100%;
   max-width: 760px;
-  height: auto;
-  margin: 10px auto 22px;
-  opacity: .9;
+  margin: 0 auto;
+  padding: 12px;
 }
 
-/* ---------- content wrapper ---------- */
+.card {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-.content {
-  padding: 0 14px 26px;
+/* ---------- header ---------- */
+
+.site-header {
+  border-bottom: 0.5px solid var(--border);
+}
+
+/* The department's own banner, linked back to their site. Width/height are
+   on the <img> so the space is reserved before it loads and the page doesn't
+   jump. It scales with the card at every width — no separate mobile
+   treatment, since this is the masthead residents recognise. */
+.site-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.site-header-tag {
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 /* ---------- hero ---------- */
 
 .hero {
-  background: var(--navy);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 22px 18px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 20px;
+  padding: 20px 16px;
+  border-bottom: 0.5px solid var(--border);
 }
 
 .hero-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 600;
-  font-size: 26px;
-  line-height: 1.12;
-  margin: 0 0 12px;
-}
-.hero-title-accent {
-  display: inline-block;
-  font-style: italic;
-  color: var(--gold);
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
 }
 
 .hero-copy {
-  font-size: 13.5px;
-  line-height: 1.7;
-  color: var(--soft);
-  margin: 0 0 16px;
-  max-width: 46ch;
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .hero-badges {
@@ -238,16 +153,12 @@ textarea:focus-visible {
 }
 
 .badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  border-radius: 3px;
-  padding: 6px 11px;
-  background: transparent;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius);
 }
+.badge-accent { background: var(--bg-accent); color: var(--text-accent); }
+.badge-success { background: var(--bg-success); color: var(--text-success); }
 
 .hero-preview {
   text-align: center;
@@ -257,95 +168,46 @@ textarea:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 210px;
+  min-height: 190px;
 }
 
-/* app.js owns background + innerHTML on every render (className is fully
-   reassigned too), so nothing here targets #signprev's inline styles or
-   JS-inserted children — only the container shape/shadow and a pseudo-
-   element sweep, which survive innerHTML replacement because they aren't
-   real DOM children. */
 .sign-preview {
-  position: relative;
-  overflow: hidden;
-  background: var(--green);
-  border-radius: 5px;
+  background: var(--tier-green);
+  border-radius: 8px;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 20px 40px -18px #000;
+  box-sizing: border-box;
 }
 
-/* Real sign proportions, 1:3 — do not change; app.js selects these classes
-   by name and depends on the exact dimensions. */
+/* Both real signs are 1:3 — 6"×18" vertical, 18"×6" horizontal. Sizing the
+   preview to the true proportion keeps the number band centred in the sign
+   the way it is actually printed, rather than floating at one end. */
 .sign-preview-v { width: 62px; height: 186px; }
 .sign-preview-h { width: 186px; height: 62px; }
 
-.sign-preview::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 34%, rgba(255,255,255,.6) 50%, transparent 66%);
-  transform: translateX(-130%);
-  animation: sweep 5.6s cubic-bezier(.5,0,.3,1) .6s infinite;
-}
-@keyframes sweep {
-  0% { transform: translateX(-130%); }
-  22% { transform: translateX(130%); }
-  100% { transform: translateX(130%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sign-preview::after { animation: none; opacity: 0; }
-}
-
 .preview-caption {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 11px;
-  color: var(--soft);
+  color: var(--text-muted);
 }
 
 /* ---------- form shell ---------- */
 
 .order-form {
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 18px;
+  gap: 20px;
 }
 
-.form-section {
-  min-width: 0;
-  background: var(--navy);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 20px 18px;
-}
+.form-section { min-width: 0; }
 
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 0 16px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid var(--rule);
-}
-.section-num {
-  background: var(--gold);
-  color: var(--navy);
-  font-size: 11px;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 3px;
-  flex: none;
-}
 .section-title {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  font-weight: 700;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* ---------- generic field styles ---------- */
@@ -353,32 +215,24 @@ textarea:focus-visible {
 label { cursor: pointer; }
 
 .field-label {
-  font-size: 10px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--gold);
-  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-secondary);
   display: block;
-  margin-bottom: 7px;
+  margin-bottom: 4px;
   cursor: default;
 }
 
 input, select, textarea, button {
   font: inherit;
-  padding: 11px 13px;
-  /* --rule is right for panel edges but only reaches ~1.9:1 against --field,
-     under WCAG 1.4.11's 3:1 for control boundaries — a resident could not
-     reliably see where a field starts. --field-border clears 3.1:1. */
-  border: 1px solid var(--field-border);
-  border-radius: 3px;
-  background: var(--field);
-  color: var(--white);
+  padding: 7px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-primary);
 }
 
 input, select, textarea {
   width: 100%;
-  font-size: 16px;
-  font-weight: 600;
 }
 
 /* Radios and checkboxes must keep their intrinsic size — the 100% width
@@ -388,14 +242,11 @@ input[type="radio"], input[type="checkbox"] {
   width: auto;
   padding: 0;
   flex: none;
-  accent-color: var(--gold);
 }
 
 textarea {
   min-height: 68px;
   resize: vertical;
-  font-size: 14px;
-  font-weight: 400;
 }
 
 button { cursor: pointer; }
@@ -406,7 +257,7 @@ fieldset {
   margin: 0 0 12px;
 }
 
-.field { margin-bottom: 14px; }
+.field { margin-bottom: 12px; }
 .field:last-child { margin-bottom: 0; }
 .field-full { width: 100%; }
 .field-medium { max-width: 220px; width: 100%; }
@@ -415,8 +266,8 @@ fieldset {
 .field-row {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 /* The row's own gap spaces these, so .field's bottom margin would double it
    when stacked — and when side by side it desyncs the two columns, because
@@ -426,12 +277,12 @@ fieldset {
 .warn-text {
   margin: -4px 0 12px;
   font-size: 12px;
-  color: var(--warn-text);
+  color: var(--text-warning);
 }
 
-.muted { color: var(--soft); opacity: .8; }
+.muted { color: var(--text-muted); }
 
-.required-mark { color: var(--err); }
+.required-mark { color: var(--text-danger); }
 
 /* ---------- radio / checkbox groups ---------- */
 
@@ -445,27 +296,14 @@ fieldset {
   display: flex;
   gap: 8px;
   align-items: center;
-  justify-content: center;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  background: var(--field);
-  padding: 13px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--soft);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+  /* Match the height of a text input so these line up with the house-number
+     box when the two sit side by side. */
   min-height: 35px;
   box-sizing: border-box;
-}
-.radio-option:has(input:checked) {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--navy);
-}
-.radio-option:has(input:focus-visible) {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
 }
 
 .radio-fieldset { margin-bottom: 0; }
@@ -482,19 +320,10 @@ fieldset {
   display: flex;
   gap: 8px;
   align-items: center;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  background: var(--field);
-  padding: 12px 11px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
   font-size: 13px;
-}
-.tier-option:has(input:checked) {
-  border-color: var(--gold);
-  background: #0D0D33;
-}
-.tier-option:has(input:focus-visible) {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
 }
 
 .tier-swatch {
@@ -503,67 +332,62 @@ fieldset {
   border-radius: 3px;
   flex: none;
 }
-.tier-swatch-green { background: var(--green); }
-.tier-swatch-yellow { background: var(--yellow); }
-.tier-swatch-red { background: var(--red); }
+.tier-swatch-green { background: var(--tier-green); }
+.tier-swatch-yellow { background: var(--tier-yellow); }
+.tier-swatch-red { background: var(--tier-red); }
 
 /* "Not sure" has no colour yet, so its swatch carries a question mark
    instead of standing in for a sign the resident would actually receive. */
 .tier-swatch-unsure {
-  background: #666;
-  color: var(--white);
+  background: #B4B2A9;
+  color: #2C2C2A;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 14px;
   text-align: center;
 }
 
 .measure-note {
   margin-top: 10px;
-  background: var(--field);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
   padding: 12px 14px;
-  font-size: 12.5px;
-  color: var(--soft);
+  font-size: 13px;
+  color: var(--text-secondary);
   line-height: 1.55;
 }
 
 .measure-note-line { display: block; margin-top: 6px; }
 
 /* A sign on the wrong post marks the wrong place, so this constraint is
-   stated up front rather than left for the crew to discover on arrival.
-   Amber (the sign-yellow token) reads as caution without inventing a new
-   colour outside the department palette. */
+   stated up front rather than left for the crew to discover on arrival. */
 .mount-rule {
-  background: var(--field);
-  border: 1px solid var(--yellow);
-  border-left: 3px solid var(--yellow);
-  border-radius: 3px;
+  background: var(--bg-warning);
+  border: 0.5px solid var(--border-warning);
+  border-radius: var(--radius);
   padding: 12px 14px;
   margin-bottom: 10px;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
 .mount-rule-head {
-  font-weight: 700;
-  color: var(--warn-text);
+  font-weight: 500;
+  color: var(--text-warning);
 }
 
 .mount-rule-body {
   display: block;
-  color: var(--soft);
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
-.mount-rule-body strong { font-weight: 700; color: var(--white); }
+.mount-rule-body strong { font-weight: 500; color: var(--text-primary); }
 
 .mount-hint {
   margin: 8px 0 0;
   font-size: 12px;
-  color: var(--soft);
-  opacity: .85;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
@@ -571,23 +395,22 @@ fieldset {
    listing them records who to expect — it does not order their signs. */
 .shared-prompt {
   margin-top: 10px;
-  background: var(--field);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
   padding: 12px 14px;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
 .shared-prompt-head {
   margin: 0;
-  font-weight: 700;
-  color: var(--white);
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .shared-prompt-body {
   margin: 4px 0 0;
-  color: var(--soft);
+  color: var(--text-secondary);
 }
 
 .shared-prompt-linkrow {
@@ -599,37 +422,26 @@ fieldset {
 }
 
 .shared-prompt-link {
-  font-family: Menlo, Consolas, monospace;
   font-size: 12px;
-  background: var(--navy);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
   padding: 5px 9px;
-  color: var(--soft);
   word-break: break-all;
 }
 
 .shared-prompt-copy {
   font-size: 12px;
-  font-weight: 700;
-  padding: 6px 12px;
+  padding: 5px 12px;
   white-space: nowrap;
-  background: var(--rule);
-  border-color: var(--rule);
-  color: var(--white);
 }
-.shared-prompt-copy:hover { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 
-.tier-copy { line-height: 1.3; color: var(--white); font-size: 13px; font-weight: 600; }
+.tier-copy { line-height: 1.3; }
 
 .tier-sub {
   display: block;
   font-size: 11px;
-  color: var(--soft);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  margin-top: 1px;
+  color: var(--text-muted);
 }
 
 .conditional { margin-top: 10px; }
@@ -639,36 +451,33 @@ fieldset {
   gap: 10px;
   align-items: flex-start;
   margin-top: 10px;
-  background: var(--field);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  padding: 12px 14px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 10px 14px;
   font-size: 13px;
-  color: var(--white);
 }
 .checkbox-row input { width: auto; margin-top: 2px; flex: none; }
 
 .checkbox-sub {
   display: block;
   font-size: 12px;
-  color: var(--soft);
-  margin-top: 4px;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 .checkbox-tip {
-  font-weight: 700;
-  color: var(--gold);
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-/* Optional blue-relay-marker offer. Gold-accented rather than plain like the
+/* Optional blue-relay-marker offer. Tinted rather than plain like the
    shared-driveway row, because this one costs money and should read as an
    offer the resident consciously accepts, not another checkbox to skim. */
 .marker-offer {
   margin-top: 10px;
-  background: var(--field);
-  border: 1px solid var(--gold);
-  border-radius: 3px;
+  background: var(--bg-accent);
+  border: 0.5px solid var(--border-accent);
+  border-radius: var(--radius);
   padding: 12px 14px;
 }
 
@@ -682,23 +491,22 @@ fieldset {
 .marker-offer-label input { width: auto; margin-top: 3px; flex: none; }
 
 .marker-offer-head {
-  font-weight: 700;
-  color: var(--gold);
+  font-weight: 500;
+  color: var(--text-accent);
 }
 
 .marker-offer-body {
   display: block;
   font-size: 12px;
-  color: var(--soft);
-  margin-top: 4px;
+  color: var(--text-secondary);
+  margin-top: 3px;
   line-height: 1.5;
 }
 
 .marker-offer-detail {
   display: block;
   font-size: 12px;
-  color: var(--soft);
-  opacity: .85;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -707,19 +515,19 @@ fieldset {
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 .contact-grid .field { margin-bottom: 0; }
 
-.contact-method-fieldset { margin-bottom: 14px; }
+.contact-method-fieldset { margin-bottom: 10px; }
 
 .contact-method-row {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
   font-size: 13px;
-  color: var(--soft);
+  color: var(--text-secondary);
 }
 
 .radio-inline {
@@ -735,33 +543,29 @@ fieldset {
   align-items: center;
   margin-top: 10px;
   font-size: 13px;
-  color: var(--soft);
+  color: var(--text-secondary);
 }
 .checkbox-inline input { width: auto; flex: none; }
 
 /* ---------- section 3: order summary ---------- */
 
 .summary-box {
-  background: var(--field);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  padding: 13px 14px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 12px 16px;
   font-size: 13px;
-  color: var(--soft);
 }
-.summary-box > div span:last-child { color: var(--white); }
 
 .price-note {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 12px;
-  color: var(--soft);
-  opacity: .8;
+  color: var(--text-muted);
 }
 
 .donation-intro {
-  margin: 18px 0 8px;
+  margin: 16px 0 6px;
   font-size: 13px;
-  color: var(--soft);
+  color: var(--text-secondary);
 }
 
 .donation-tiers {
@@ -771,48 +575,40 @@ fieldset {
 }
 
 .donation-btn {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  padding: 9px 14px;
-  background: var(--field);
-  color: var(--soft);
-  border: 1px solid var(--rule);
+  font-size: 13px;
 }
 
-.donation-btn.selected,
-.donation-btn.don-active {
-  border-color: var(--gold);
-  background: var(--gold);
-  color: var(--navy);
+.donation-btn.selected {
+  border-color: var(--border-accent);
+  background: var(--bg-accent);
+  color: var(--text-accent);
 }
 
 .total-line {
-  margin: 16px 0 0;
+  margin: 12px 0 0;
   font-size: 13px;
-  color: var(--soft);
+  color: var(--text-secondary);
 }
 .total-line #total {
-  font-weight: 800;
-  font-size: 16px;
-  color: var(--gold);
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* ---------- errors ---------- */
 
 .field-err {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   font-size: 12px;
-  color: var(--err);
-  font-weight: 600;
+  color: var(--text-danger);
 }
 
 .form-err {
-  background: var(--err-bg);
-  border: 1px solid var(--err);
-  color: var(--err);
-  border-radius: 3px;
-  padding: 12px 14px;
+  background: var(--bg-success);
+  background: #FBEAEA;
+  border: 1px solid var(--text-danger);
+  color: var(--text-danger);
+  border-radius: var(--radius);
+  padding: 10px 14px;
   font-size: 13px;
 }
 .form-err ul { margin: 4px 0 0; padding-left: 18px; }
@@ -824,22 +620,17 @@ fieldset {
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  border-top: 1px solid var(--rule);
-  padding-top: 18px;
-  margin-top: 4px;
+  border-top: 0.5px solid var(--border);
+  padding-top: 16px;
 }
 
 .submit-btn {
-  width: 100%;
-  background: var(--red);
+  background: var(--text-danger);
   color: #fff;
-  border: 2px solid var(--gold);
-  border-radius: 4px;
-  padding: 15px;
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: var(--radius);
 }
 .submit-btn:disabled {
   opacity: 0.6;
@@ -848,82 +639,91 @@ fieldset {
 
 .submit-help {
   font-size: 12px;
-  color: var(--soft);
-  opacity: .85;
+  color: var(--text-muted);
 }
 
 /* ---------- success / soft panels ---------- */
 
 .success-panel,
 .soft-panel {
-  border-radius: 6px;
-  padding: 18px;
-  background: var(--navy);
-  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 16px;
 }
 
-.success-panel { border-left: 3px solid var(--green); }
+.success-panel {
+  background: var(--bg-success);
+  border: 1px solid var(--text-success);
+}
 .success-heading {
   margin: 0 0 8px;
-  font-size: 17px;
-  color: var(--ok-text);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 600;
-  font-style: italic;
+  font-size: 16px;
+  color: var(--text-success);
 }
-.success-orderid { margin: 0 0 10px; font-size: 14px; color: var(--white); }
-.success-orderid strong { color: var(--gold); }
-.success-items { margin: 0 0 12px; padding-left: 18px; font-size: 13px; color: var(--soft); }
-.success-next { margin: 0 0 8px; font-size: 13px; color: var(--soft); }
-.success-next strong { color: var(--white); }
-.success-paylink { margin: 8px 0 0; font-size: 13px; color: var(--white); }
+.success-orderid { margin: 0 0 10px; font-size: 14px; }
+.success-items { margin: 0 0 12px; padding-left: 18px; font-size: 13px; }
+.success-next { margin: 0 0 8px; font-size: 13px; color: var(--text-secondary); }
+.success-paylink { margin: 8px 0 0; font-size: 13px; }
 
-.soft-panel { border-left: 3px solid var(--yellow); }
+.soft-panel {
+  background: #FFF8E6;
+  border: 1px solid var(--text-warning);
+}
 .soft-heading {
   margin: 0 0 8px;
-  font-size: 17px;
-  color: var(--warn-text);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 600;
-  font-style: italic;
+  font-size: 16px;
+  color: var(--text-warning);
 }
-.soft-panel p { margin: 0; font-size: 13px; color: var(--soft); }
-.soft-panel-strong { margin-top: 8px !important; color: var(--white) !important; }
-.soft-panel-strong strong { font-weight: 700; color: var(--warn-text); }
+.soft-panel p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+.soft-panel-strong { margin-top: 8px !important; color: var(--text-primary) !important; }
+.soft-panel-strong strong { font-weight: 500; }
 
 /* ---------- footer ---------- */
 
 .site-footer {
   text-align: center;
-  padding: 18px;
-  border-top: 1px solid var(--rule);
-  font-size: 11px;
-  color: var(--soft);
+  padding: 20px 12px 32px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
-.site-footer-name { margin: 0 0 4px; }
-.site-footer a { color: var(--gold); }
+.site-footer a { display: block; margin-bottom: 4px; }
+.site-footer p { margin: 0; }
 
 /* ============================================================
-   Responsive — single breakpoint at 640px, matching the banner swap
+   Responsive — desktop breakpoint (~680px)
    ============================================================ */
 
-@media (min-width: 640px) {
-  .content { padding: 0 24px 30px; }
+@media (min-width: 680px) {
+  .page { padding: 24px 16px; }
+
+  .site-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+  }
+  .site-header-link { align-self: center; }
 
   .hero {
     flex-direction: row;
     align-items: center;
-    padding: 26px;
-    gap: 24px;
+    padding: 20px 24px;
   }
-  .hero-intro { flex: 1; min-width: 0; }
-  /* Fixed width so the intro copy never reflows when orientation toggles
-     changes the preview's aspect ratio. */
+  .hero-intro { flex: 1; }
+  /* Fixed at the width of the widest state (the horizontal caption, which is
+     longer than the vertical one) so the intro paragraph never rewraps when
+     the orientation changes. Sizing to content let the column breathe by
+     14px and reflowed the copy on every toggle. */
   .hero-preview { flex: 0 0 300px; width: 300px; }
-  .hero-title { font-size: 32px; }
+  .hero-title { font-size: 22px; }
+
+  .order-form { padding: 20px 24px; }
 
   .field-row {
     flex-direction: row;
+    /* Top-aligned so the two labels share a line. flex-end aligned the
+       margin boxes instead, and .field's 12px bottom margin (which
+       .radio-fieldset zeroed out) shoved the house-number input up by
+       exactly that much. */
     align-items: flex-start;
     flex-wrap: wrap;
   }
@@ -931,7 +731,7 @@ fieldset {
   .field-wide { flex: 1; min-width: 210px; }
 
   .tier-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   }
 
   .contact-grid {
@@ -942,5 +742,4 @@ fieldset {
     flex-direction: row;
     align-items: center;
   }
-  .submit-btn { width: auto; }
 }

@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='10' y='2' width='12' height='28' rx='2' fill='%23156B34'/%3E%3Crect x='12' y='4' width='8' height='24' rx='1' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -26,21 +26,19 @@
 </div>
 
 <div class="page">
+  <div class="card">
 
-  <img class="banner-img" src="assets/dept-banner.jpg" alt="Yorktown Heights Engine Company #1 — Fire, Rescue">
-  <div class="banner-css">
-    <div class="banner-css-wm">YORKTOWN HEIGHTS<small>ENGINE COMPANY #1</small></div>
-    <img class="banner-css-patch" src="assets/dept-patch.jpg" alt="">
-  </div>
-
-  <p class="tagline"><em>All volunteer for 117 years</em></p>
-  <img class="divider" src="assets/dept-divider.jpg" alt="">
-
-  <div class="content">
+    <header class="site-header">
+      <a href="https://www.yorktownfire.org">
+        <img class="site-banner" src="assets/dept-banner.jpg" width="1200" height="220"
+             alt="Yorktown Heights Engine Company #1 — Fire, Rescue">
+      </a>
+      <p class="site-header-tag">911 address sign program &middot; all volunteer for 117 years</p>
+    </header>
 
     <section class="hero">
       <div class="hero-intro">
-        <h1 class="hero-title">Seconds count.<br><span class="hero-title-accent">Help us find you.</span></h1>
+        <h1 class="hero-title">Seconds count. Help us find you.</h1>
         <p class="hero-copy">A reflective address sign at the end of your driveway helps our crews find you at night, in rain, and in snow. The sign color tells responders how long your driveway is. We order your signs and hardware at the vendor's prices &mdash; you pay only for what you order &mdash; and our volunteers install everything free.</p>
         <div class="hero-badges">
           <span class="badge badge-accent">You pay vendor cost only</span>
@@ -58,7 +56,7 @@
     <form id="orderform" class="order-form" novalidate>
 
       <section class="form-section">
-        <div class="section-head"><span class="section-num">01</span><h2 class="section-title">Your sign</h2></div>
+        <h2 class="section-title">1 &middot; Your sign</h2>
 
         <div class="field-row">
           <div class="field field-narrow">
@@ -165,7 +163,7 @@
       </section>
 
       <section class="form-section">
-        <div class="section-head"><span class="section-num">02</span><h2 class="section-title">Property &amp; contact</h2></div>
+        <h2 class="section-title">2 &middot; Property &amp; contact</h2>
 
         <div class="contact-grid">
           <div class="field">
@@ -211,7 +209,7 @@
       </section>
 
       <section class="form-section">
-        <div class="section-head"><span class="section-num">03</span><h2 class="section-title">Your order</h2></div>
+        <h2 class="section-title">3 &middot; Your order</h2>
 
         <div id="summary" class="summary-box" aria-live="polite"></div>
         <p class="price-note">Prices are the sign vendor's current prices<span id="pricesasof"></span> &mdash; we confirm your exact total, including shipping, with you before placing the order.</p>
@@ -255,11 +253,9 @@
       </div>
 
     </form>
-
   </div>
 
   <footer class="site-footer">
-    <p class="site-footer-name">Yorktown Heights Engine Co. No. 1</p>
     <a href="https://www.yorktownfire.org">yorktownfire.org</a>
   </footer>
 </div>

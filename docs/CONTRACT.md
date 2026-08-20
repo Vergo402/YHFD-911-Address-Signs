@@ -1,6 +1,6 @@
 # Interface Contract — YHEC1 911 Sign Portal
 
-Single source of truth for every file in this repo. If a piece disagrees with this document, the piece is wrong. Approved mockup: `docs/mockup-v5.html` (binding visual target).
+Single source of truth for every file in this repo. If a piece disagrees with this document, the piece is wrong. Approved visual target: `docs/mockup-v4.html` (light theme) **plus two deltas** — the department's real banner (`assets/dept-banner.jpg`) replaces the plain text header, and the UI face is Libre Franklin. `docs/mockup-v5.html` (dark navy/gold) was built and reverted on 2026-08-20: the dark ground was hard to read for this audience, which is the population the portal exists to serve. Do not reintroduce it.
 
 ## 1. DOM contract (index.html ⇄ app.js)
 
