@@ -273,6 +273,10 @@ fieldset {
   gap: 12px;
   margin-bottom: 12px;
 }
+/* The row's own gap spaces these, so .field's bottom margin would double it
+   when stacked — and when side by side it desyncs the two columns, because
+   flex alignment measures margin boxes. */
+.field-row > .field { margin-bottom: 0; }
 
 .warn-text {
   margin: -4px 0 12px;
@@ -300,6 +304,10 @@ fieldset {
   border-radius: var(--radius);
   padding: 8px 12px;
   font-size: 13px;
+  /* Match the height of a text input so these line up with the house-number
+     box when the two sit side by side. */
+  min-height: 35px;
+  box-sizing: border-box;
 }
 
 .radio-fieldset { margin-bottom: 0; }
@@ -678,7 +686,11 @@ fieldset {
 
   .field-row {
     flex-direction: row;
-    align-items: flex-end;
+    /* Top-aligned so the two labels share a line. flex-end aligned the
+       margin boxes instead, and .field's 12px bottom margin (which
+       .radio-fieldset zeroed out) shoved the house-number input up by
+       exactly that much. */
+    align-items: flex-start;
     flex-wrap: wrap;
   }
   .field-narrow { min-width: 130px; }
