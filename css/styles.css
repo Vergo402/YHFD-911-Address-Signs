@@ -713,7 +713,11 @@ fieldset {
     padding: 20px 24px;
   }
   .hero-intro { flex: 1; }
-  .hero-preview { min-width: 170px; }
+  /* Fixed at the width of the widest state (the horizontal caption, which is
+     longer than the vertical one) so the intro paragraph never rewraps when
+     the orientation changes. Sizing to content let the column breathe by
+     14px and reflowed the copy on every toggle. */
+  .hero-preview { flex: 0 0 300px; width: 300px; }
   .hero-title { font-size: 22px; }
 
   .order-form { padding: 20px 24px; }
