@@ -15,6 +15,8 @@ Two-phase test plan: local UI validation with mock mode, then backend curl matri
 | Case | Inputs | Expected Preview | Summary Items | Notes |
 |---|---|---|---|---|
 | Green tier, short driveway | House: 123, Orient: V, Mount: mailbox, Tier: green | Green sign, small size | Sign + Bracket (no post, no markers) | Length input hidden |
+| Not sure tier | House: 1234, Orient: V, Mount: mailbox, Tier: not sure | Neutral grey sign; caption reads "color set when we measure" | Sign + Bracket; sign line says "Address sign (1234), vertical, two-sided — color set after we measure" | Length input hidden, marker offer hidden, explanatory note shown. Price identical to any coloured tier ($43.15) |
+| Not sure clears marker opt-in | Red tier, tick markers, then pick "Not sure" | Marker offer hides | No marker lines; total drops back to sign + bracket | Checkbox must clear; payload must send drivewayLengthFt 0 |
 | Yellow tier, 600 ft | House: 1234, Orient: H, Mount: mailbox, Tier: yellow, Length: 600 | Yellow sign, wide | Sign + Bracket only | Marker offer must NOT appear — a driveway under 1,000 ft never reaches a marker point |
 | Red tier, 2500 ft, markers declined | House: 12345, Orient: V, Mount: newpost, Tier: red, Length: 2500 | Red sign, vertical | Sign + Bracket + Post, no markers | Marker offer visible and UNCHECKED by default; nothing added until opted in |
 | Red tier, 2500 ft, markers accepted | Same, then tick the marker checkbox | Red sign, vertical | Sign + Bracket + Post + Two markers "1000" "2000" | Offer label reads "2 markers, $69.82"; `floor(2500/1000)=2` |

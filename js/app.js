@@ -48,17 +48,23 @@
     prices = prices || {};
     var vert = state.orientation === 'v';
     var vertLabel = vert ? 'vertical' : 'horizontal';
-    var colorName = TIER_NAMES[state.tier] || 'Green';
     var num = state.houseNumber != null ? state.houseNumber : '';
-    // The bordered product family has no yellow — tier-2 signs come from the
-    // non-border products, so their label must not say "bordered".
-    var borderWord = state.tier === 'yellow' ? '' : 'bordered ';
+    var signLabel;
+    if (state.tier === 'unsure') {
+      // No colour has been decided yet — the department measures the driveway
+      // first. Every colour costs the same, so the price is still exact.
+      signLabel = 'Address sign (' + num + '), ' + vertLabel +
+        ', two-sided — color set after we measure';
+    } else {
+      // The bordered product family has no yellow — tier-2 signs come from the
+      // non-border products, so their label must not say "bordered".
+      var borderWord = state.tier === 'yellow' ? '' : 'bordered ';
+      signLabel = (TIER_NAMES[state.tier] || 'Green') + ' ' + borderWord +
+        'address sign (' + num + '), ' + vertLabel + ', two-sided';
+    }
     var items = [];
 
-    items.push({
-      label: colorName + ' ' + borderWord + 'address sign (' + num + '), ' + vertLabel + ', two-sided',
-      amount: prices.sign
-    });
+    items.push({ label: signLabel, amount: prices.sign });
     items.push({ label: 'Mounting bracket (' + vertLabel + ')', amount: prices.bracket });
     if (state.mounting === 'newpost') {
       items.push({ label: 'Sign post', amount: prices.post });
@@ -131,7 +137,7 @@
       fail('mounting', 'Choose where to mount your sign.');
     }
 
-    if (['green', 'yellow', 'red'].indexOf(payload.tier) === -1) {
+    if (['green', 'yellow', 'red', 'unsure'].indexOf(payload.tier) === -1) {
       fail('tier', 'Choose your driveway length range.');
     }
 
@@ -250,7 +256,10 @@
     var COLORS = {
       green: { bg: '#156B34', fg: '#fff', name: 'Green' },
       yellow: { bg: '#E8B60A', fg: '#111', name: 'Yellow' },
-      red: { bg: '#A32D2D', fg: '#fff', name: 'Red' }
+      red: { bg: '#A32D2D', fg: '#fff', name: 'Red' },
+      // Neutral grey stands in until the department measures the driveway —
+      // deliberately not one of the three real sign colours.
+      unsure: { bg: '#B4B2A9', fg: '#2C2C2A', name: '' }
     };
 
     // -- Defensive element lookup: warn once per missing id, never throw. --
@@ -272,6 +281,7 @@
       digitwarn: byId('digitwarn'),
       mount: byId('mount'),
       lenwrap: byId('lenwrap'),
+      measurenote: byId('measurenote'),
       markerwrap: byId('markerwrap'),
       markers: byId('markers'),
       markercount: byId('markercount'),
@@ -385,8 +395,10 @@
       els.signprev.innerHTML = '<div style="' + frame + '">' + spans + '</div>';
 
       if (els.prevcap) {
-        els.prevcap.textContent = (vert ? '6″×18″ vertical' : '18″×6″ horizontal') +
-          ' · diamond grade · two-sided' + (tier === 'yellow' ? '' : ' · bordered');
+        var size = vert ? '6″×18″ vertical' : '18″×6″ horizontal';
+        els.prevcap.textContent = tier === 'unsure'
+          ? size + ' · color set when we measure'
+          : size + ' · diamond grade · two-sided' + (tier === 'yellow' ? '' : ' · bordered');
       }
       setHidden(els.digitwarn, !(vert && d.length > 4));
     }
@@ -419,7 +431,10 @@
 
     function toggleConditionalUI() {
       var tier = getSelectedRadioValue('tier') || 'green';
-      setHidden(els.lenwrap, tier === 'green');
+      // A length is only asked for on the two tiers that depend on it; green is
+      // short by definition and "unsure" is the whole point of not asking.
+      setHidden(els.lenwrap, tier === 'green' || tier === 'unsure');
+      setHidden(els.measurenote, tier !== 'unsure');
       setHidden(els.sharedwrap, !(els.shared && els.shared.checked));
 
       // Markers are offered on the red tier only. Leaving the tier clears the
@@ -624,7 +639,9 @@
         orientation: state.orientation,
         mounting: state.mounting,
         tier: state.tier,
-        drivewayLengthFt: state.tier === 'green' ? 0 : state.drivewayLengthFt,
+        // Only yellow and red carry a length; green and unsure send 0 so a
+        // stale value in the hidden input can't ride along.
+        drivewayLengthFt: (state.tier === 'yellow' || state.tier === 'red') ? state.drivewayLengthFt : 0,
         wantMarkers: state.wantMarkers,
         sharedDriveway: state.sharedDriveway,
         sharedNumbers: els.sharednums ? els.sharednums.value.trim() : '',

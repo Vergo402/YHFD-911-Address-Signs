@@ -15,6 +15,7 @@ Element IDs (must exist exactly):
 | `mount` | `<select>` | Options with `value`: `mailbox`, `existing`, `newpost` |
 | `lenwrap` | `<div>` (hidden) | Wrapper for driveway length input |
 | `dlen` | `<input type="number" min="150" max="20000" step="50">` | Driveway length ft |
+| `measurenote` | `<div>` (hidden) | Explanation shown only when `tier = "unsure"` |
 | `markerwrap` | `<div>` (hidden) | Wrapper for the optional-marker block; shown only on the red tier |
 | `markers` | `<input type="checkbox">` | Opt in to blue relay markers (unchecked by default) |
 | `markercount` / `markerprice` / `markerdetail` | spans | Derived count, derived price, and the marker texts, all filled by app.js |
@@ -35,7 +36,9 @@ Element IDs (must exist exactly):
 | `softpanel` | `<div>` (hidden) | Soft-success panel (no-cors fallback wording) |
 | `orderform` | `<form novalidate>` | The form |
 
-Radio groups by `name`: `orient` (values `v`,`h`; default `v`), `tier` (values `green`,`yellow`,`red`; default `green`), `contactm` (values `text`,`call`,`email`; default `text`).
+Radio groups by `name`: `orient` (values `v`,`h`; default `v`), `tier` (values `green`,`yellow`,`red`,`unsure`; default `green`), `contactm` (values `text`,`call`,`email`; default `text`).
+
+`tier = "unsure"` means the resident doesn't know their driveway length and has asked the department to measure it. The sign colour is undetermined until then. Price is unaffected — every colour costs the same — so the order still totals correctly and can be submitted.
 
 Honeypot: `<input type="text" name="contact_website" id="contact_website" tabindex="-1" autocomplete="off" aria-hidden="true">` inside a `.hp` wrapper positioned off-screen via CSS (not `display:none` — bots skip those).
 
@@ -63,7 +66,7 @@ window.PORTAL_CONFIG = {
 - `computeMarkers(tier, lenFt, wantMarkers)`: `[]` unless `tier === "red"` **and** `wantMarkers === true`; then `["1000","2000",…]` with count `max(1, floor(lenFt/1000))`, capped at 20.
   - Blue relay markers are an **optional purchase**, opt-in (unchecked by default), and offered **only on the red tier**. A yellow-tier driveway is under 1,000 ft, so it never reaches a 1,000-ft mark — it gets no markers at all.
 - Line items, in order:
-  1. `{Color} bordered address sign ({number}), {vertical|horizontal}, two-sided` — `prices.sign`. Exception: yellow (tier 2) comes from the non-border product family, so its label drops the word "bordered": `Yellow address sign ({number}), …`
+  1. `{Color} bordered address sign ({number}), {vertical|horizontal}, two-sided` — `prices.sign`. Two exceptions: yellow (tier 2) comes from the non-border product family, so its label drops the word "bordered" (`Yellow address sign ({number}), …`); and `unsure` has no colour yet, so its label reads `Address sign ({number}), {orientation}, two-sided — colour set after we measure`.
   2. `Mounting bracket ({vertical|horizontal})` — `prices.bracket`
   3. `Sign post` — `prices.post` — only if `mounting === "newpost"`
   4. One per marker: `Blue relay marker "{text}", vertical` — `prices.marker`
@@ -78,7 +81,7 @@ window.PORTAL_CONFIG = {
   "uuid": "crypto.randomUUID()",
   "houseNumber": "1234", "orientation": "v|h",
   "mounting": "mailbox|existing|newpost",
-  "tier": "green|yellow|red", "drivewayLengthFt": 1400,
+  "tier": "green|yellow|red|unsure", "drivewayLengthFt": 1400,
   "wantMarkers": false,
   "sharedDriveway": false, "sharedNumbers": "",
   "fullName": "", "address": "", "phone": "", "email": "",
@@ -99,8 +102,8 @@ Never send a total. Never use `application/json` (CORS preflight breaks Apps Scr
 | houseNumber | required, 1–5 alphanumeric, uppercase+trim |
 | orientation | enum v/h |
 | mounting | enum mailbox/existing/newpost |
-| tier | enum green/yellow/red |
-| drivewayLengthFt | required iff tier≠green; integer; yellow 150–1000, red 1001–20000 |
+| tier | enum green/yellow/red/unsure |
+| drivewayLengthFt | required only for tier yellow or red; integer; yellow 150–1000, red 1001–20000. Not required (and ignored) for green and unsure |
 | wantMarkers | boolean; server ignores it unless tier is `red` |
 | sharedDriveway, rentalProperty | boolean |
 | sharedNumbers | ≤100 chars |

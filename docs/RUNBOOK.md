@@ -13,7 +13,7 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 | Status | What it means | What you do before moving to this status |
 |---|---|---|
 | **New** | Order just came in through the website. Nobody has looked at it yet. | Nothing yet — this is the starting point. |
-| **Contacted** | You've reached out to the resident. | Call, text, or email the resident (using their **Preferred Contact** column) to: (1) **verify the house number reading** out loud with them — read it back digit by digit; (2) **confirm the exact total due, including shipping**, quoted from the actual vendor shopping cart (the website's estimate does not include shipping); (3) if it's a **shared/common driveway**, use the call to gather what you need (which mailbox is whose, layout at the road) and then **the department decides and records** the **Arrow Direction (dept)** column (left or right) before ordering — this is a department decision, not the resident's call. |
+| **Contacted** | You've reached out to the resident. | Call, text, or email the resident (using their **Preferred Contact** column) to: (1) **verify the house number reading** out loud with them — read it back digit by digit; (2) **confirm the exact total due, including shipping**, quoted from the actual vendor shopping cart (the website's estimate does not include shipping); (3) if **Tier Color** says `unsure`, **measure the driveway** and replace `unsure` with `green`, `yellow`, or `red` — the sign has no colour until you do, and if it measures over 1,000 ft, offer the optional blue relay markers (about $34.91 each) while you have them on the phone; (4) if it's a **shared/common driveway**, use the call to gather what you need (which mailbox is whose, layout at the road) and then **the department decides and records** the **Arrow Direction (dept)** column before ordering — this is a department decision, not the resident's call. |
 | **Ordered** | You've placed the individual order with the sign vendor. | Place the order using the **Vendor Order Helper recipe** (Section 3 below) — one order per resident, no bulk ordering. Record the **Actual Vendor Total $ (dept)** column with what you actually paid, including shipping. |
 | **Installed** | The sign(s) have been physically installed. | Confirm installation happened (crew report, photo, or your own visit). |
 | **Paid** | Cash or check has been collected from the resident. | Record the **Donation Received $ (dept)** column with the actual amount collected (may differ from what they pledged online). |
@@ -28,6 +28,7 @@ Each row is one order. Columns you'll touch most as you work an order:
 
 - **Status** — set this by hand as you move the order through the stages above.
 - **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission. **Marker Texts** is empty unless the resident opted into the blue relay markers (offered on the red tier only).
+- **Tier Color** — `green`, `yellow`, or `red`, or **`unsure`** when the resident asked us to measure. An `unsure` row is not orderable: measure the driveway during **Contacted** and overwrite the cell with the real colour first. The Vendor Order Helper will refuse to produce a recipe until you do.
 - **Arrow Direction (dept)** — blank until you set it during the **Contacted** step (only relevant when **Arrow Sign** is checked).
 - **Full Name**, **Property Address**, **Phone**, **Email**, **Preferred Contact** — how to reach the resident.
 - **Est Signs+Hardware $**, **Donation Pledged $**, **Est Total Due $** — what the *website* estimated. These are placeholders, not final — shipping isn't included.
@@ -46,6 +47,7 @@ Each row is one order. Columns you'll touch most as you work an order:
 Use this each time you place an individual vendor order (trafficsign.com). Every order is placed **one resident at a time** — no combining multiple residents into one cart.
 
 1. Confirm what to order from the row: **Tier Color**, **Orientation**, **Mounting**, **Post Included**, **Marker Texts**, and **Arrow Sign** + **Arrow Direction (dept)**.
+   - **Stop if Tier Color still says `unsure`.** That driveway hasn't been measured, so there is no colour to order. Go measure it, set the real colour, and come back.
 2. Add to the vendor cart:
    - **Vertical address sign (green/red tiers):** product **49961** ("with Border – Numbers Only") — 6×18, 4" characters, Diamond Grade, double-sided, .063", **No Holes**, no graffiti film. About $34.91. (Max 4 characters at 4" — this is why 5-digit house numbers get the warning above.)
    - **Horizontal address sign (green/red tiers):** product **49965** ("with Border – Numbers Only") — 18×6, 4" characters, Diamond Grade, double-sided, .063", No Holes, no film. About $34.91. (Max 8 characters at 4".)

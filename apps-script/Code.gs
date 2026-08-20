@@ -118,8 +118,8 @@ function validateOrder(order) {
     fail('mounting', 'Choose a mounting option.');
   }
 
-  if (['green', 'yellow', 'red'].indexOf(order.tier) === -1) {
-    fail('tier', 'Choose a relay marker tier.');
+  if (['green', 'yellow', 'red', 'unsure'].indexOf(order.tier) === -1) {
+    fail('tier', 'Choose a driveway length range.');
   }
 
   if (order.tier === 'yellow' || order.tier === 'red') {
@@ -209,16 +209,23 @@ function computeMarkers(tier, lenFt, wantMarkers) {
  */
 function computeLineItems(order, prices) {
   var items = [];
-  var colorLabel = order.tier.charAt(0).toUpperCase() + order.tier.slice(1);
   var orientLabel = order.orientation === 'h' ? 'horizontal' : 'vertical';
-  // The bordered product family has no yellow — tier-2 signs come from the
-  // non-border products (8349/8348), so their label must not say "bordered".
-  var borderWord = order.tier === 'yellow' ? '' : 'bordered ';
+  var signLabel;
+  if (order.tier === 'unsure') {
+    // No colour decided yet — the department measures the driveway first.
+    // Every colour costs the same, so the price is still exact.
+    signLabel = 'Address sign (' + order.houseNumber + '), ' + orientLabel +
+      ', two-sided — color set after we measure';
+  } else {
+    // The bordered product family has no yellow — tier-2 signs come from the
+    // non-border products (8349/8348), so their label must not say "bordered".
+    var colorLabel = order.tier.charAt(0).toUpperCase() + order.tier.slice(1);
+    var borderWord = order.tier === 'yellow' ? '' : 'bordered ';
+    signLabel = colorLabel + ' ' + borderWord + 'address sign (' +
+      order.houseNumber + '), ' + orientLabel + ', two-sided';
+  }
 
-  items.push({
-    label: colorLabel + ' ' + borderWord + 'address sign (' + order.houseNumber + '), ' + orientLabel + ', two-sided',
-    amount: prices.sign
-  });
+  items.push({ label: signLabel, amount: prices.sign });
 
   items.push({
     label: 'Mounting bracket (' + orientLabel + ')',
@@ -293,7 +300,7 @@ function buildRow(order, derived, now) {
     order.houseNumber,                                         // House Number
     order.tier,                                                // Tier Color
     order.orientation,                                         // Orientation
-    order.tier === 'green' ? '' : order.drivewayLengthFt,      // Driveway Ft
+    (order.tier === 'yellow' || order.tier === 'red') ? order.drivewayLengthFt : '', // Driveway Ft
     derived.markers.join(', '),                                // Marker Texts
     order.sharedDriveway ? 'Yes' : 'No',                        // Arrow Sign
     '',                                                         // Arrow Direction (dept) — filled in manually
@@ -618,9 +625,13 @@ function sendDeptEmail_(order, derived) {
   lines.push('--- Sign details ---');
   lines.push('House number: ' + order.houseNumber);
   lines.push('Orientation: ' + (order.orientation === 'h' ? 'Horizontal' : 'Vertical'));
-  lines.push('Tier: ' + order.tier);
-  if (order.tier !== 'green') {
-    lines.push('Driveway length: ' + order.drivewayLengthFt + ' ft');
+  if (order.tier === 'unsure') {
+    lines.push('Tier: NOT YET KNOWN — resident asked us to measure the driveway');
+  } else {
+    lines.push('Tier: ' + order.tier);
+    if (order.tier === 'yellow' || order.tier === 'red') {
+      lines.push('Driveway length: ' + order.drivewayLengthFt + ' ft (resident estimate)');
+    }
   }
   lines.push('Mounting: ' + order.mounting);
   if (order.tier === 'red') {
@@ -658,6 +669,10 @@ function sendDeptEmail_(order, derived) {
   lines.push('Estimated total due: $' + fmtUsd_(derived.totalDue));
   lines.push('');
   lines.push('--- Reminders ---');
+  if (order.tier === 'unsure') {
+    lines.push('- MEASURE THIS DRIVEWAY FIRST. Set Tier Color in the Orders sheet before ordering — the sign has no colour yet.');
+    lines.push('- If it measures over 1,000 ft, offer the optional blue relay markers before ordering.');
+  }
   lines.push('- Confirm the exact total, including shipping, before placing the vendor order.');
   if (order.sharedDriveway) {
     lines.push('- Set the Arrow Direction (left/right) in the Orders sheet before ordering the arrow sign.');

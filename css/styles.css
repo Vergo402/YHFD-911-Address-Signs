@@ -324,6 +324,29 @@ fieldset {
 .tier-swatch-yellow { background: var(--tier-yellow); }
 .tier-swatch-red { background: var(--tier-red); }
 
+/* "Not sure" has no colour yet, so its swatch carries a question mark
+   instead of standing in for a sign the resident would actually receive. */
+.tier-swatch-unsure {
+  background: #B4B2A9;
+  color: #2C2C2A;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+  text-align: center;
+}
+
+.measure-note {
+  margin-top: 10px;
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.measure-note-line { display: block; margin-top: 6px; }
+
 .tier-copy { line-height: 1.3; }
 
 .tier-sub {

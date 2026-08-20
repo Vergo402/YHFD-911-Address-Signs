@@ -15,6 +15,9 @@ The sign color depends on the driveway length from the road:
 | Under 150 feet | **Green** | Not offered |
 | 150 feet – 1,000 feet | **Yellow** | Not offered — the driveway never reaches a 1,000-foot mark |
 | Over 1,000 feet | **Red** | **Offered as an optional add-on**, one per 1,000 feet ("1000", "2000", …) |
+| Not sure | **Set after the department measures** | Discussed after measuring, if it turns out to be over 1,000 feet |
+
+Residents who don't know their driveway length can pick **"Not sure — we'll measure it"**. The order goes through normally (every colour costs the same, so the total is still exact) and the sign colour is filled in by the crew. Such rows land in the Sheet with `Tier Color = unsure`, the department email says the driveway needs measuring, and the Vendor Order Helper refuses to produce an order recipe until a real colour is set.
 
 **Blue relay markers are an optional purchase, not automatic.** They exist for relay pumping: one engine can't push water the length of a long driveway, so crews stage a second engine partway in, and the markers show arriving crews where. Only red-tier orders see the offer, the checkbox starts unchecked, and the count and price are derived from the driveway length the resident entered.
 
