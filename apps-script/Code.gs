@@ -38,13 +38,27 @@ var CONFIG = {
 
 // Exact column order for the Orders tab — must match CONTRACT.md section 9.
 var ORDERS_HEADERS = [
-  'Timestamp', 'Order ID', 'Status', 'Assigned To', 'House Number', 'Tier Color', 'Orientation',
+  'Timestamp', 'Order ID', 'Days Waiting', 'Assigned To', 'Status', 'Payment Status',
+  'Payment Type', 'House Number', 'Tier Color', 'Orientation',
   'Driveway Ft', 'Marker Texts', 'Arrow Sign', 'Arrow Direction (dept)', 'Mounting',
   'Post Included', 'Shared With Numbers', 'Full Name', 'Property Address', 'Phone',
   'Email', 'Preferred Contact', 'In-District Attest',
   'Placement Notes', 'Est Signs+Hardware $', 'Donation Pledged $', 'Est Total Due $',
-  'Actual Vendor Total $ (dept)', 'Donation Received $ (dept)', 'Email Status', 'Internal Notes'
+  'Actual Vendor Total $ (dept)', 'Order Payment Received $ (dept)',
+  'Donation Received $ (dept)', 'Email Status', 'Internal Notes'
 ];
+
+// Enum lists shared by validation, Dashboard, and migration.
+var ORDER_STATUSES = ['New', 'Contacted', 'Ordered', 'Installed', 'On Hold', 'Cancelled'];
+var PAYMENT_STATUSES = ['Unpaid', 'Partial', 'Paid', 'Waived'];
+var PAYMENT_TYPES = ['Cash', 'Check', 'Other'];
+
+// Per-row Days Waiting formula (column C). Written by the server on append
+// and backfilled by setupOrderTracker, so moving columns can't break a
+// sheet-wide ARRAYFORMULA. Counts up until payment settles (or Cancelled).
+function daysWaitingFormula_(row) {
+  return '=IF($A' + row + '="","",IF(OR($E' + row + '="Cancelled",$F' + row + '="Paid",$F' + row + '="Waived"),"-",ROUND(NOW()-$A' + row + ')))';
+}
 
 var QUARANTINE_HEADERS = ['Timestamp', 'Reason', 'Raw Payload'];
 
@@ -288,7 +302,7 @@ function makeOrderId(uuidStr) {
 }
 
 /**
- * Builds the 27-element row for the Orders tab (columns A–AA), in the
+ * Builds the 32-element row for the Orders tab (columns A–AF), in the
  * exact order of ORDERS_HEADERS / CONTRACT.md section 9.
  *
  * `order` = sanitized order object (see sanitizeOrder).
@@ -300,8 +314,11 @@ function buildRow(order, derived, now, assignee) {
   return [
     now,                                                      // Timestamp
     derived.orderId,                                          // Order ID
-    'New',                                                     // Status
+    '',                                                        // Days Waiting — doPost overwrites with a per-row formula
     assignee || '',                                            // Assigned To — round-robin, '' when member list is empty
+    'New',                                                     // Status
+    'Unpaid',                                                  // Payment Status
+    '',                                                        // Payment Type — set when money changes hands
     order.houseNumber,                                         // House Number
     order.tier,                                                // Tier Color
     order.orientation,                                         // Orientation
@@ -323,6 +340,7 @@ function buildRow(order, derived, now, assignee) {
     derived.donation,                                           // Donation Pledged $
     derived.totalDue,                                           // Est Total Due $
     '',                                                         // Actual Vendor Total $ (dept) — filled in manually
+    '',                                                         // Order Payment Received $ (dept) — filled in manually
     '',                                                         // Donation Received $ (dept) — filled in manually
     'pending',                                                  // Email Status — updated after send attempts
     derived.internalNotes                                       // Internal Notes
@@ -498,6 +516,7 @@ function doPost(e) {
       }
       ordersSheet.appendRow(buildRow(order, derived, new Date(), pickAssignee_(ss)));
       lastRow = ordersSheet.getLastRow();
+      ordersSheet.getRange(lastRow, 3).setFormula(daysWaitingFormula_(lastRow));
 
       // Arm the uuid replay guard the moment the row is durable. Anything
       // that fails after this point (emails, status write-back) must NOT
@@ -776,15 +795,23 @@ function weeklyHeartbeat() {
     var total = Math.max(0, last - 1);
     var recent = 0, waiting = 0, needMeasure = 0, needArrowDir = 0;
 
+    var unpaidInstalled = 0;
     if (last >= 2) {
-      // A..J covers Timestamp, Order ID, Status, House Number, Tier Color,
-      // Orientation, Driveway Ft, Marker Texts, Arrow Sign, Arrow Direction.
-      var rows = sheet.getRange(2, 1, last - 1, 10).getValues();
+      // Column positions come from ORDERS_HEADERS so a schema change can't
+      // silently skew these counts again.
+      var C_TS = ORDERS_HEADERS.indexOf('Timestamp'),
+          C_ST = ORDERS_HEADERS.indexOf('Status'),
+          C_PS = ORDERS_HEADERS.indexOf('Payment Status'),
+          C_TIER = ORDERS_HEADERS.indexOf('Tier Color'),
+          C_ARR = ORDERS_HEADERS.indexOf('Arrow Sign'),
+          C_ARRD = ORDERS_HEADERS.indexOf('Arrow Direction (dept)');
+      var rows = sheet.getRange(2, 1, last - 1, ORDERS_HEADERS.length).getValues();
       var cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
       for (var i = 0; i < rows.length; i++) {
-        var ts = rows[i][0], status = String(rows[i][2] || ''),
-            tier = String(rows[i][4] || ''), arrow = String(rows[i][8] || ''),
-            arrowDir = String(rows[i][9] || '');
+        var ts = rows[i][C_TS], status = String(rows[i][C_ST] || ''),
+            pay = String(rows[i][C_PS] || ''),
+            tier = String(rows[i][C_TIER] || ''), arrow = String(rows[i][C_ARR] || ''),
+            arrowDir = String(rows[i][C_ARRD] || '');
         if (ts && ts.getTime && ts.getTime() >= cutoff) recent++;
         var open = (status === 'New' || status === 'Contacted');
         if (open) {
@@ -792,6 +819,7 @@ function weeklyHeartbeat() {
           if (tier === 'unsure') needMeasure++;
           if (arrow === 'Yes' && !arrowDir.trim()) needArrowDir++;
         }
+        if (status === 'Installed' && (pay === 'Unpaid' || pay === 'Partial')) unpaidInstalled++;
       }
     }
 
@@ -802,6 +830,7 @@ function weeklyHeartbeat() {
     lines.push('Orders total: ' + total);
     lines.push('');
     lines.push('Waiting on the department: ' + waiting + ' (status New or Contacted)');
+    lines.push('Installed but not fully paid: ' + unpaidInstalled);
     if (needMeasure) lines.push('  - ' + needMeasure + ' need the driveway measured (Tier Color is "unsure")');
     if (needArrowDir) lines.push('  - ' + needArrowDir + ' need an Arrow Direction set before ordering');
     lines.push('');
@@ -933,107 +962,216 @@ function pickAssignee_(ss) {
   return next;
 }
 
-// One-time (re-runnable) setup: inserts the Assigned To column, adds the
-// follow-through date columns + Days Waiting, wires dropdowns and row
-// colors, and builds the Dashboard tab. Safe to run again after edits.
+// Finds a header's 1-based column, or 0 when absent.
+function colOf_(sheet, header) {
+  var row = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  for (var i = 0; i < row.length; i++) if (String(row[i]).trim() === header) return i + 1;
+  return 0;
+}
+
+// Inserts newHeader immediately right of afterHeader unless it already exists.
+function ensureColumnAfter_(sheet, afterHeader, newHeader) {
+  if (colOf_(sheet, newHeader)) return;
+  var at = colOf_(sheet, afterHeader);
+  if (!at) throw new Error('ensureColumnAfter_: missing anchor header ' + afterHeader);
+  sheet.insertColumnAfter(at);
+  sheet.getRange(1, at + 1).setValue(newHeader);
+}
+
+// One-time (re-runnable) setup + migration. Header-name-driven so it follows
+// the department's own column arrangement instead of fighting it:
+//  - repairs the Days Waiting header (broken #REF! after a column move) and
+//    switches it to per-row formulas,
+//  - inserts the Payment Status / Payment Type / Order Payment Received
+//    columns if absent,
+//  - repairs any rows appended under the OLD column order (values landed in
+//    the wrong physical columns after the manual rearrange),
+//  - migrates legacy Status="Paid" rows to Installed + Payment Paid,
+//  - rewrites validations, row tints (preserving any hand-added rules, e.g.
+//    the Days Waiting conditional formatting), and the Dashboard.
 function setupOrderTracker() {
   var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
   var orders = ss.getSheetByName(CONFIG.SHEET_ORDERS);
 
-  if (orders.getRange(1, 4).getValue() !== 'Assigned To') {
-    orders.insertColumnAfter(3);
-    orders.getRange(1, 4).setValue('Assigned To');
+  // --- Columns ---
+  if (!colOf_(orders, 'Days Waiting')) orders.getRange(1, 3).setValue('Days Waiting'); // heals the #REF! header
+  ensureColumnAfter_(orders, 'Status', 'Payment Status');
+  ensureColumnAfter_(orders, 'Payment Status', 'Payment Type');
+  ensureColumnAfter_(orders, 'Actual Vendor Total $ (dept)', 'Order Payment Received $ (dept)');
+  var cST = colOf_(orders, 'Status'), cPS = colOf_(orders, 'Payment Status'),
+      cDW = colOf_(orders, 'Days Waiting');
+
+  // Old pre-rearrange header order, for repairing misaligned rows below.
+  var LEGACY_HEADERS = [
+    'Timestamp', 'Order ID', 'Status', 'Assigned To', 'House Number', 'Tier Color', 'Orientation',
+    'Driveway Ft', 'Marker Texts', 'Arrow Sign', 'Arrow Direction (dept)', 'Mounting',
+    'Post Included', 'Shared With Numbers', 'Full Name', 'Property Address', 'Phone',
+    'Email', 'Preferred Contact', 'In-District Attest',
+    'Placement Notes', 'Est Signs+Hardware $', 'Donation Pledged $', 'Est Total Due $',
+    'Actual Vendor Total $ (dept)', 'Donation Received $ (dept)', 'Email Status', 'Internal Notes'
+  ];
+
+  // --- Row migration/backfill ---
+  var last = orders.getLastRow();
+  for (var r = 2; r <= last; r++) {
+    var rowVals = orders.getRange(r, 1, 1, ORDERS_HEADERS.length).getValues()[0];
+    if (!String(rowVals[0]).trim() && !String(rowVals[1]).trim()) continue; // blank row
+    var stVal = String(rowVals[cST - 1] || '').trim();
+    var dwVal = String(rowVals[cDW - 1] || '').trim();
+
+    // Row written by the old code into the rearranged sheet: the legacy
+    // 28-value array landed positionally, so Status text sits in the Days
+    // Waiting column. Rebuild the row by header name.
+    if (ORDER_STATUSES.concat(['Paid']).indexOf(stVal) < 0 &&
+        ORDER_STATUSES.concat(['Paid']).indexOf(dwVal) >= 0) {
+      var fixed = [];
+      for (var kk = 0; kk < ORDERS_HEADERS.length; kk++) fixed.push('');
+      for (var li = 0; li < LEGACY_HEADERS.length; li++) {
+        var target = ORDERS_HEADERS.indexOf(LEGACY_HEADERS[li]);
+        if (target >= 0) fixed[target] = rowVals[li];
+      }
+      orders.getRange(r, 1, 1, ORDERS_HEADERS.length).setValues([fixed]);
+      rowVals = fixed;
+      stVal = String(rowVals[cST - 1] || '').trim();
+    }
+
+    // Legacy closed state: Status "Paid" splits into Installed + payment Paid.
+    if (stVal === 'Paid') {
+      orders.getRange(r, cST).setValue('Installed');
+      orders.getRange(r, cPS).setValue('Paid');
+    }
+    // Default Payment Status for pre-split rows.
+    if (!String(orders.getRange(r, cPS).getValue()).trim()) {
+      orders.getRange(r, cPS).setValue('Unpaid');
+    }
+    // Per-row Days Waiting formula.
+    orders.getRange(r, cDW).setFormula(daysWaitingFormula_(r));
   }
 
+  // --- Tracker columns right of the contract ---
   var extras = ['Contacted On', 'Ordered On', 'Installed On', 'Paid On'];
-  for (var i = 0; i < extras.length; i++) orders.getRange(1, 29 + i).setValue(extras[i]);
-  orders.getRange(1, 33).setFormula(
-    '=ARRAYFORMULA({"Days Waiting"; IF($A$2:$A="",,IF(($C$2:$C="Paid")+($C$2:$C="Cancelled"),"-",ROUND(NOW()-$A$2:$A)))})');
+  var base = ORDERS_HEADERS.length; // 32 contract columns
+  for (var e = 0; e < extras.length; e++) {
+    if (!colOf_(orders, extras[e])) orders.getRange(1, base + 1 + e).setValue(extras[e]);
+  }
+  var stillOwedCol = colOf_(orders, 'Paid On') + 1;
+  orders.getRange(1, stillOwedCol).setFormula(
+    '=ARRAYFORMULA({"Still Owed $"; IF($A$2:$A="",,IF($E$2:$E="Cancelled","-",ROUND(N($AB$2:$AB)-N($AC$2:$AC),2)))})');
 
+  // --- Dashboard ---
   var dash = ss.getSheetByName('Dashboard');
   if (!dash) dash = ss.insertSheet('Dashboard');
   dash.getRange('A1').setValue('YHEC1 911 Sign Portal - Dashboard').setFontWeight('bold');
   dash.getRange('A3').setValue('Pipeline').setFontWeight('bold');
-  var statuses = ['New', 'Contacted', 'Ordered', 'Installed', 'Paid', 'On Hold', 'Cancelled'];
-  for (var r = 0; r < statuses.length; r++) {
-    dash.getRange(4 + r, 1).setValue(statuses[r]);
-    dash.getRange(4 + r, 2).setFormula('=COUNTIF(Orders!$C$2:$C,"' + statuses[r] + '")');
+  dash.getRange('A4:B10').clearContent();
+  for (var st = 0; st < ORDER_STATUSES.length; st++) {
+    dash.getRange(4 + st, 1).setValue(ORDER_STATUSES[st]);
+    dash.getRange(4 + st, 2).setFormula('=COUNTIF(Orders!$E$2:$E,"' + ORDER_STATUSES[st] + '")');
   }
+  var OPEN_CRIT = ',Orders!$E$2:$E,"<>Cancelled",Orders!$F$2:$F,"<>Paid",Orders!$F$2:$F,"<>Waived"';
   dash.getRange('A12').setValue('Unassigned open');
-  dash.getRange('B12').setFormula('=COUNTIFS(Orders!$D$2:$D,"",Orders!$A$2:$A,"<>",Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled")');
+  dash.getRange('B12').setFormula('=COUNTIFS(Orders!$D$2:$D,"",Orders!$A$2:$A,"<>"' + OPEN_CRIT + ')');
   dash.getRange('A13').setValue('Oldest New order');
-  dash.getRange('B13').setFormula('=IFERROR(INDEX(Orders!$B$2:$B,MATCH(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),Orders!$A$2:$A,0))&" - "&TEXT(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),"m/d"),"none")');
+  dash.getRange('B13').setFormula('=IFERROR(INDEX(Orders!$B$2:$B,MATCH(MINIFS(Orders!$A$2:$A,Orders!$E$2:$E,"New"),Orders!$A$2:$A,0))&" - "&TEXT(MINIFS(Orders!$A$2:$A,Orders!$E$2:$E,"New"),"m/d"),"none")');
 
   dash.getRange('D3').setValue('Money').setFontWeight('bold');
+  dash.getRange('D4:E11').clearContent();
   dash.getRange('D4').setValue('Vendor cost paid out');
-  dash.getRange('E4').setFormula('=SUM(Orders!$Y$2:$Y)');
-  dash.getRange('D5').setValue('Collected from residents');
-  dash.getRange('E5').setFormula('=SUM(Orders!$Z$2:$Z)');
-  dash.getRange('D6').setValue('Donations pledged (open orders)');
-  dash.getRange('E6').setFormula('=SUMIFS(Orders!$W$2:$W,Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled")');
+  dash.getRange('E4').setFormula('=SUM(Orders!$AB$2:$AB)');
+  dash.getRange('D5').setValue('Order payments collected');
+  dash.getRange('E5').setFormula('=SUM(Orders!$AC$2:$AC)');
+  dash.getRange('D6').setValue('Still owed to the department');
+  dash.getRange('E6').setFormula('=SUMPRODUCT((Orders!$E$2:$E<>"Cancelled")*(Orders!$A$2:$A<>"")*(N(Orders!$AB$2:$AB)-N(Orders!$AC$2:$AC)))');
+  dash.getRange('D7').setValue('Donations received');
+  dash.getRange('E7').setFormula('=SUM(Orders!$AD$2:$AD)');
+  dash.getRange('D8').setValue('Donations pledged (open orders)');
+  dash.getRange('E8').setFormula('=SUMIFS(Orders!$Z$2:$Z,Orders!$A$2:$A,"<>"' + OPEN_CRIT + ')');
+
+  dash.getRange('D10').setValue('Payments').setFontWeight('bold');
+  var payRows = [
+    ['Unpaid orders', '=COUNTIFS(Orders!$F$2:$F,"Unpaid",Orders!$A$2:$A,"<>",Orders!$E$2:$E,"<>Cancelled")'],
+    ['Partially paid', '=COUNTIFS(Orders!$F$2:$F,"Partial",Orders!$A$2:$A,"<>")'],
+    ['Installed but unpaid', '=COUNTIFS(Orders!$E$2:$E,"Installed",Orders!$F$2:$F,"Unpaid")+COUNTIFS(Orders!$E$2:$E,"Installed",Orders!$F$2:$F,"Partial")'],
+    ['Cash / Check / Other', '=COUNTIF(Orders!$G$2:$G,"Cash")&" / "&COUNTIF(Orders!$G$2:$G,"Check")&" / "&COUNTIF(Orders!$G$2:$G,"Other")']
+  ];
+  for (var pr = 0; pr < payRows.length; pr++) {
+    dash.getRange(11 + pr, 4).setValue(payRows[pr][0]);
+    dash.getRange(11 + pr, 5).setFormula(payRows[pr][1]);
+  }
 
   dash.getRange('G3').setValue('Members - rotation order (add names below)').setFontWeight('bold');
   if (!getMemberList_(ss).length) dash.getRange('G4').setValue('Alex Vergo');
   dash.getRange('H3').setValue('Open').setFontWeight('bold');
   for (var m = 0; m < 17; m++) {
     dash.getRange(4 + m, 8).setFormula(
-      '=IF($G' + (4 + m) + '="","",COUNTIFS(Orders!$D$2:$D,$G' + (4 + m) + ',Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled"))');
+      '=IF($G' + (4 + m) + '="","",COUNTIFS(Orders!$D$2:$D,$G' + (4 + m) + OPEN_CRIT + '))');
   }
 
-  var statusRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(statuses, true).setAllowInvalid(false).build();
-  orders.getRange('C2:C1000').setDataValidation(statusRule);
-  var memberRule = SpreadsheetApp.newDataValidation()
-    .requireValueInRange(dash.getRange('G4:G50'), true).setAllowInvalid(true).build();
-  orders.getRange('D2:D1000').setDataValidation(memberRule);
+  // --- Validations ---
+  orders.getRange('E2:E1000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(ORDER_STATUSES, true).setAllowInvalid(false).build());
+  orders.getRange('F2:F1000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(PAYMENT_STATUSES, true).setAllowInvalid(false).build());
+  orders.getRange('G2:G1000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(PAYMENT_TYPES, true).setAllowInvalid(true).build());
+  orders.getRange('D2:D1000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInRange(dash.getRange('G4:G50'), true).setAllowInvalid(true).build());
+  orders.getRange('C2:C1000').setDataValidation(null); // Days Waiting: formulas, no dropdown
 
+  // --- Row tints: keep every rule this function didn't create (e.g. the
+  // department's own Days Waiting formatting), replace only the status tints.
+  var mineRe = /^=\$[A-Z]{1,2}2="(New|Contacted|Ordered|Installed|Paid)"$/;
+  var kept = [];
+  var existing = orders.getConditionalFormatRules();
+  for (var x = 0; x < existing.length; x++) {
+    var bc = existing[x].getBooleanCondition();
+    var vals = bc ? bc.getCriteriaValues() : null;
+    var isMine = vals && vals.length === 1 && mineRe.test(String(vals[0]));
+    if (!isMine) kept.push(existing[x]);
+  }
   var tints = [['New', '#fce8e6'], ['Contacted', '#fef7e0'], ['Ordered', '#e8f0fe'],
-               ['Installed', '#e0f2f1'], ['Paid', '#d9ead3']];
-  var rules = [];
+               ['Installed', '#e0f2f1']];
   for (var t = 0; t < tints.length; t++) {
-    rules.push(SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=$C2="' + tints[t][0] + '"')
+    kept.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=$E2="' + tints[t][0] + '"')
       .setBackground(tints[t][1])
-      .setRanges([orders.getRange('A2:AG1000')])
+      .setRanges([orders.getRange('A2:AK1000')])
       .build());
   }
-  orders.setConditionalFormatRules(rules);
+  orders.setConditionalFormatRules(kept);
   orders.setFrozenRows(1);
-  Logger.log('TRACKER OK: Assigned To column, follow-through columns, Dashboard, dropdowns, colors.');
+  Logger.log('TRACKER OK: payment split, migration, Dashboard, dropdowns, tints (hand-added rules preserved).');
 }
 
 
 // One-time (re-runnable) visual polish: header filter + slicers on Orders,
-// and a live member-by-status pivot on the Dashboard replacing the H-column
-// workload formulas. Chip-style dropdowns can't be set by script — flip
-// "Display style: Chip" on columns C and D in the Sheets UI once.
+// and a live member-by-status pivot on the Dashboard. Deletes and recreates
+// its own slicers/pivot so schema changes propagate on re-run. Chip-style
+// dropdowns can't be set by script — flip "Display style: Chip" on the
+// Status / Payment Status / Payment Type columns in the Sheets UI once.
 function setupSheetPolish() {
   var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
   var orders = ss.getSheetByName(CONFIG.SHEET_ORDERS);
   var dash = ss.getSheetByName('Dashboard');
 
-  if (!orders.getFilter()) orders.getRange('A1:AG1000').createFilter();
+  var oldFilter = orders.getFilter();
+  if (oldFilter) oldFilter.remove();
+  orders.getRange('A1:AK1000').createFilter();
 
   var slicers = orders.getSlicers();
-  if (!slicers.length) {
-    var src = orders.getRange('A1:AG1000');
-    var s1 = orders.insertSlicer(src, 1, 8);
-    s1.setColumnFilterCriteria(3, null).setTitle('Status');
-    var s2 = orders.insertSlicer(src, 1, 11);
-    s2.setColumnFilterCriteria(4, null).setTitle('Assigned To');
-  }
+  for (var i = 0; i < slicers.length; i++) slicers[i].remove();
+  var src = orders.getRange('A1:AK1000');
+  orders.insertSlicer(src, 1, 9).setColumnFilterCriteria(5, null).setTitle('Status');
+  orders.insertSlicer(src, 1, 12).setColumnFilterCriteria(4, null).setTitle('Assigned To');
+  orders.insertSlicer(src, 1, 15).setColumnFilterCriteria(6, null).setTitle('Payment Status');
 
-  // Pivot replaces the hand-built workload formulas.
   dash.getRange('H3:H20').clearContent();
-  var hasPivot = dash.getPivotTables().length > 0;
-  if (!hasPivot) {
-    var pt = dash.getRange('A16').createPivotTable(orders.getRange('A1:AG1000'));
-    var rowG = pt.addRowGroup(4);
-    rowG.setDisplayName('Member');
-    var colG = pt.addColumnGroup(3);
-    colG.setDisplayName('Status');
-    pt.addPivotValue(2, SpreadsheetApp.PivotTableSummarizeFunction.COUNTA).setDisplayName('Orders');
-  }
+  var pivots = dash.getPivotTables();
+  for (var p = 0; p < pivots.length; p++) pivots[p].remove();
+  var pt = dash.getRange('A16').createPivotTable(orders.getRange('A1:AK1000'));
+  pt.addRowGroup(4).setDisplayName('Member');
+  pt.addColumnGroup(5).setDisplayName('Status');
+  pt.addPivotValue(2, SpreadsheetApp.PivotTableSummarizeFunction.COUNTA).setDisplayName('Orders');
   dash.getRange('A15').setValue('Orders by member and status').setFontWeight('bold');
   Logger.log('POLISH OK: filter, slicers, pivot.');
 }
