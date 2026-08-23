@@ -1001,3 +1001,39 @@ function setupOrderTracker() {
   orders.setFrozenRows(1);
   Logger.log('TRACKER OK: Assigned To column, follow-through columns, Dashboard, dropdowns, colors.');
 }
+
+
+// One-time (re-runnable) visual polish: header filter + slicers on Orders,
+// and a live member-by-status pivot on the Dashboard replacing the H-column
+// workload formulas. Chip-style dropdowns can't be set by script — flip
+// "Display style: Chip" on columns C and D in the Sheets UI once.
+function setupSheetPolish() {
+  var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
+  var orders = ss.getSheetByName(CONFIG.SHEET_ORDERS);
+  var dash = ss.getSheetByName('Dashboard');
+
+  if (!orders.getFilter()) orders.getRange('A1:AG1000').createFilter();
+
+  var slicers = orders.getSlicers();
+  if (!slicers.length) {
+    var src = orders.getRange('A1:AG1000');
+    var s1 = orders.insertSlicer(src, 1, 8);
+    s1.setColumnFilterCriteria(3, null).setTitle('Status');
+    var s2 = orders.insertSlicer(src, 1, 11);
+    s2.setColumnFilterCriteria(4, null).setTitle('Assigned To');
+  }
+
+  // Pivot replaces the hand-built workload formulas.
+  dash.getRange('H3:H20').clearContent();
+  var hasPivot = dash.getPivotTables().length > 0;
+  if (!hasPivot) {
+    var pt = dash.getRange('A16').createPivotTable(orders.getRange('A1:AG1000'));
+    var rowG = pt.addRowGroup(4);
+    rowG.setDisplayName('Member');
+    var colG = pt.addColumnGroup(3);
+    colG.setDisplayName('Status');
+    pt.addPivotValue(2, SpreadsheetApp.PivotTableSummarizeFunction.COUNTA).setDisplayName('Orders');
+  }
+  dash.getRange('A15').setValue('Orders by member and status').setFontWeight('bold');
+  Logger.log('POLISH OK: filter, slicers, pivot.');
+}
