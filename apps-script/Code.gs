@@ -1001,6 +1001,11 @@ function setupOrderTracker() {
   var cST = colOf_(orders, 'Status'), cPS = colOf_(orders, 'Payment Status'),
       cDW = colOf_(orders, 'Days Waiting');
 
+  // Freshly inserted columns inherit their left neighbour's validation
+  // (the Status dropdown), which would reject the values written below.
+  // Clear the working area first; correct rules are re-applied at the end.
+  orders.getRange('C2:G1000').setDataValidation(null);
+
   // Old pre-rearrange header order, for repairing misaligned rows below.
   var LEGACY_HEADERS = [
     'Timestamp', 'Order ID', 'Status', 'Assigned To', 'House Number', 'Tier Color', 'Orientation',
