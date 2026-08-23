@@ -26,7 +26,9 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 
 Each row is one order. Columns you'll touch most as you work an order:
 
-- **Status** — set this by hand as you move the order through the stages above.
+- **Status** — a dropdown; set it as you move the order through the stages above. The row tints to match (red New → green Paid).
+- **Assigned To** — who owns this order. New orders are assigned automatically, rotating through the member list on the **Dashboard** tab so the work spreads evenly. To join (or add someone to) the rotation, just add the name to the Dashboard's member list — no code, it takes effect on the next order. Reassign any order by picking a different name from the dropdown.
+- **Contacted On / Ordered On / Installed On / Paid On** — date-stamp these as you move the status forward; **Days Waiting** counts up on its own until the order is Paid.
 - **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission. **Marker Texts** is empty unless the resident opted into the blue relay markers (offered on the red tier only).
 - **Tier Color** — `green`, `yellow`, or `red`, or **`unsure`** when the resident asked us to measure. An `unsure` row is not orderable: measure the driveway during **Contacted** and overwrite the cell with the real colour first. The Vendor Order Helper will refuse to produce a recipe until you do.
 - **Arrow Direction (dept)** — blank until you set it during the **Contacted** step (only relevant when **Arrow Sign** is checked).

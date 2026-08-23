@@ -38,7 +38,7 @@ var CONFIG = {
 
 // Exact column order for the Orders tab — must match CONTRACT.md section 9.
 var ORDERS_HEADERS = [
-  'Timestamp', 'Order ID', 'Status', 'House Number', 'Tier Color', 'Orientation',
+  'Timestamp', 'Order ID', 'Status', 'Assigned To', 'House Number', 'Tier Color', 'Orientation',
   'Driveway Ft', 'Marker Texts', 'Arrow Sign', 'Arrow Direction (dept)', 'Mounting',
   'Post Included', 'Shared With Numbers', 'Full Name', 'Property Address', 'Phone',
   'Email', 'Preferred Contact', 'In-District Attest',
@@ -296,11 +296,12 @@ function makeOrderId(uuidStr) {
  *               markers, internalNotes }.
  * `now` = a Date for the Timestamp column.
  */
-function buildRow(order, derived, now) {
+function buildRow(order, derived, now, assignee) {
   return [
     now,                                                      // Timestamp
     derived.orderId,                                          // Order ID
     'New',                                                     // Status
+    assignee || '',                                            // Assigned To — round-robin, '' when member list is empty
     order.houseNumber,                                         // House Number
     order.tier,                                                // Tier Color
     order.orientation,                                         // Orientation
@@ -495,7 +496,7 @@ function doPost(e) {
         ordersSheet = ss.insertSheet(CONFIG.SHEET_ORDERS);
         ordersSheet.appendRow(ORDERS_HEADERS);
       }
-      ordersSheet.appendRow(buildRow(order, derived, new Date()));
+      ordersSheet.appendRow(buildRow(order, derived, new Date(), pickAssignee_(ss)));
       lastRow = ordersSheet.getLastRow();
 
       // Arm the uuid replay guard the moment the row is durable. Anything
@@ -897,4 +898,106 @@ function setupCheck() {
   } catch (err) {
     Logger.log('SETUP FAILED: ' + (err && err.message ? err.message : err) + '\n\nCompleted so far:\n' + results.join('\n'));
   }
+}
+
+
+// ---------------- Order tracker: rotation + setup ----------------
+
+// Member list lives on the Dashboard tab (G4:G50) so volunteers can edit it
+// without touching code. Read fresh on every order: a name added there joins
+// the dropdown AND the rotation immediately.
+function getMemberList_(ss) {
+  var dash = ss.getSheetByName('Dashboard');
+  if (!dash) return [];
+  var vals = dash.getRange('G4:G50').getValues();
+  var out = [];
+  for (var i = 0; i < vals.length; i++) {
+    var v = String(vals[i][0]).trim();
+    if (v) out.push(v);
+  }
+  return out;
+}
+
+// Rolodex rotation. Remembers the last-assigned NAME (not an index) so
+// adding/removing members never skips or double-assigns anyone; if the
+// remembered name left the list, the rotation restarts at the top.
+// Called from doPost while the script lock is held, so two simultaneous
+// orders cannot grab the same slot.
+function pickAssignee_(ss) {
+  var members = getMemberList_(ss);
+  if (!members.length) return '';
+  var props = PropertiesService.getScriptProperties();
+  var last = props.getProperty('lastAssignee') || '';
+  var next = members[(members.indexOf(last) + 1) % members.length];
+  props.setProperty('lastAssignee', next);
+  return next;
+}
+
+// One-time (re-runnable) setup: inserts the Assigned To column, adds the
+// follow-through date columns + Days Waiting, wires dropdowns and row
+// colors, and builds the Dashboard tab. Safe to run again after edits.
+function setupOrderTracker() {
+  var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
+  var orders = ss.getSheetByName(CONFIG.SHEET_ORDERS);
+
+  if (orders.getRange(1, 4).getValue() !== 'Assigned To') {
+    orders.insertColumnAfter(3);
+    orders.getRange(1, 4).setValue('Assigned To');
+  }
+
+  var extras = ['Contacted On', 'Ordered On', 'Installed On', 'Paid On'];
+  for (var i = 0; i < extras.length; i++) orders.getRange(1, 29 + i).setValue(extras[i]);
+  orders.getRange(1, 33).setFormula(
+    '=ARRAYFORMULA({"Days Waiting"; IF($A$2:$A="",,IF(($C$2:$C="Paid")+($C$2:$C="Cancelled"),"-",ROUND(NOW()-$A$2:$A)))})');
+
+  var dash = ss.getSheetByName('Dashboard');
+  if (!dash) dash = ss.insertSheet('Dashboard');
+  dash.getRange('A1').setValue('YHEC1 911 Sign Portal - Dashboard').setFontWeight('bold');
+  dash.getRange('A3').setValue('Pipeline').setFontWeight('bold');
+  var statuses = ['New', 'Contacted', 'Ordered', 'Installed', 'Paid', 'On Hold', 'Cancelled'];
+  for (var r = 0; r < statuses.length; r++) {
+    dash.getRange(4 + r, 1).setValue(statuses[r]);
+    dash.getRange(4 + r, 2).setFormula('=COUNTIF(Orders!$C$2:$C,"' + statuses[r] + '")');
+  }
+  dash.getRange('A12').setValue('Unassigned open');
+  dash.getRange('B12').setFormula('=COUNTIFS(Orders!$D$2:$D,"",Orders!$A$2:$A,"<>",Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled")');
+  dash.getRange('A13').setValue('Oldest New order');
+  dash.getRange('B13').setFormula('=IFERROR(INDEX(Orders!$B$2:$B,MATCH(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),Orders!$A$2:$A,0)-1)&" - "&TEXT(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),"m/d"),"none")');
+
+  dash.getRange('D3').setValue('Money').setFontWeight('bold');
+  dash.getRange('D4').setValue('Vendor cost paid out');
+  dash.getRange('E4').setFormula('=SUM(Orders!$Y$2:$Y)');
+  dash.getRange('D5').setValue('Collected from residents');
+  dash.getRange('E5').setFormula('=SUM(Orders!$Z$2:$Z)');
+  dash.getRange('D6').setValue('Donations pledged (open orders)');
+  dash.getRange('E6').setFormula('=SUMIFS(Orders!$W$2:$W,Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled")');
+
+  dash.getRange('G3').setValue('Members - rotation order (add names below)').setFontWeight('bold');
+  if (!getMemberList_(ss).length) dash.getRange('G4').setValue('Alex Vergo');
+  dash.getRange('H3').setValue('Open').setFontWeight('bold');
+  for (var m = 0; m < 17; m++) {
+    dash.getRange(4 + m, 8).setFormula(
+      '=IF($G' + (4 + m) + '="","",COUNTIFS(Orders!$D$2:$D,$G' + (4 + m) + ',Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled"))');
+  }
+
+  var statusRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(statuses, true).setAllowInvalid(false).build();
+  orders.getRange('C2:C1000').setDataValidation(statusRule);
+  var memberRule = SpreadsheetApp.newDataValidation()
+    .requireValueInRange(dash.getRange('G4:G50'), true).setAllowInvalid(true).build();
+  orders.getRange('D2:D1000').setDataValidation(memberRule);
+
+  var tints = [['New', '#fce8e6'], ['Contacted', '#fef7e0'], ['Ordered', '#e8f0fe'],
+               ['Installed', '#e0f2f1'], ['Paid', '#d9ead3']];
+  var rules = [];
+  for (var t = 0; t < tints.length; t++) {
+    rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=$C2="' + tints[t][0] + '"')
+      .setBackground(tints[t][1])
+      .setRanges([orders.getRange('A2:AG1000')])
+      .build());
+  }
+  orders.setConditionalFormatRules(rules);
+  orders.setFrozenRows(1);
+  Logger.log('TRACKER OK: Assigned To column, follow-through columns, Dashboard, dropdowns, colors.');
 }
