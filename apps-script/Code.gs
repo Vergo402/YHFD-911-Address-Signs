@@ -21,6 +21,7 @@
 // ============ CONFIG — EDIT HERE ============
 var CONFIG = {
   DEPT_EMAIL: 'avergo@yorktownfire.org',
+  SHEET_ID: '1tid8RXsPQZ3Xw3PMeJmuONGxuhWLlO0Wjps8s5x56C0',   // this Sheet; standalone script opens it by ID
   // Live trafficsign.com prices, 2026-08-19: sign/marker $34.91, arrow (49977)
   // $29.98, Wing Bracket Y3518 $8.24, 8' 1.12lbs/ft green U-channel post $37.80.
   PRICES: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },
@@ -488,7 +489,7 @@ function doPost(e) {
         internalNotes: internalNotes
       };
 
-      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
       var ordersSheet = ss.getSheetByName(CONFIG.SHEET_ORDERS);
       if (!ordersSheet) {
         ordersSheet = ss.insertSheet(CONFIG.SHEET_ORDERS);
@@ -593,7 +594,7 @@ function md5Hex_(str) {
  * the row index captured at append time only if the ID isn't found.
  */
 function writeEmailStatus_(orderId, fallbackRow, status) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_ORDERS);
+  var sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_ORDERS);
   var statusCol = ORDERS_HEADERS.indexOf('Email Status') + 1;
   var idCol = ORDERS_HEADERS.indexOf('Order ID') + 1;
   var last = sheet.getLastRow();
@@ -609,7 +610,7 @@ function writeEmailStatus_(orderId, fallbackRow, status) {
 }
 
 function appendQuarantineRow_(reason, rawPayload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
   var sheet = ss.getSheetByName(CONFIG.SHEET_QUARANTINE);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.SHEET_QUARANTINE);
@@ -758,7 +759,7 @@ function sendResidentEmail_(order, derived) {
  */
 function weeklyHeartbeat() {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_ORDERS);
+    var sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_ORDERS);
     if (!sheet) {
       MailApp.sendEmail({
         to: CONFIG.DEPT_EMAIL,
@@ -858,7 +859,7 @@ function checkHeaderRow_(sheet, expectedHeaders, sheetName) {
 function setupCheck() {
   var results = [];
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
 
     var ordersSheet = ss.getSheetByName(CONFIG.SHEET_ORDERS);
     if (!ordersSheet) {
