@@ -53,7 +53,7 @@
    ============================================================ */
 
 window.PORTAL_CONFIG = {
-  endpoint: "",                      // Apps Script /exec URL. "" => mock mode. ?mock=1 also forces mock.
+  endpoint: "https://script.google.com/macros/s/AKfycbxHQeA3_Zvi1_UzIE-OWr3WDy93xHnHmmYJvREMof9YPKSlh_HLmMg0Y6uNvd0SlX8D/exec",                      // Apps Script /exec URL. "" => mock mode. ?mock=1 also forces mock.
   prices: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },  // EDIT HERE — keep in sync with Code.gs PRICES
   pricesAsOf: "trafficsign.com prices as of Aug 19, 2026",
   donationTiers: [0, 10, 25, 50],    // "Other" is always appended
