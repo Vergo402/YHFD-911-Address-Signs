@@ -20,7 +20,7 @@
 
 // ============ CONFIG — EDIT HERE ============
 var CONFIG = {
-  DEPT_EMAIL: 'CHANGE_ME@example.com',
+  DEPT_EMAIL: 'avergo@yorktownfire.org',
   // Live trafficsign.com prices, 2026-08-19: sign/marker $34.91, arrow (49977)
   // $29.98, Wing Bracket Y3518 $8.24, 8' 1.12lbs/ft green U-channel post $37.80.
   PRICES: { sign: 34.91, bracket: 8.24, post: 37.80, marker: 34.91, arrow: 29.98 },
