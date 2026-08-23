@@ -484,7 +484,7 @@
     // What each mounting choice means in practice, including the escape hatch
     // for a mailbox that turns out not to be at the driveway after all.
     var MOUNT_HINTS = {
-      mailbox: "If your mailbox turns out to sit across the road or in a shared stand, we'll bring a post instead and let you know before ordering.",
+      mailbox: "If your mailbox turns out to be located across the road or in a shared stand, we'll confirm with you before updating the order.",
       existing: 'Tell us in the notes below what it is (fence post, gate post, lamp post) so we bring the right hardware.',
       newpost: "We'll set a green U-channel post right at your driveway entrance."
     };
