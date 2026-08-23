@@ -154,13 +154,15 @@ Throttling is two-tier: a per-email limit (3/hour) so one source flooding degrad
 
 `weeklyHeartbeat()` runs on a weekly time-based trigger and emails the department a summary (new orders, orders awaiting action, rows needing measurement or an arrow direction). Its purpose is to make silence detectable: a broken portal produces no orders, which is indistinguishable from a quiet week.
 
-## 9. Orders sheet columns (A→AB, 28 columns, exact order; appendRow must match)
+## 9. Orders sheet columns (A→AF, 32 columns, exact order; appendRow must match)
 
-Timestamp | Order ID | Status | Assigned To | House Number | Tier Color | Orientation | Driveway Ft | Marker Texts | Arrow Sign | Arrow Direction (dept) | Mounting | Post Included | Shared With Numbers | Full Name | Property Address | Phone | Email | Preferred Contact | In-District Attest | Placement Notes | Est Signs+Hardware $ | Donation Pledged $ | Est Total Due $ | Actual Vendor Total $ (dept) | Donation Received $ (dept) | Email Status | Internal Notes
+Timestamp | Order ID | Days Waiting | Assigned To | Status | Payment Status | Payment Type | House Number | Tier Color | Orientation | Driveway Ft | Marker Texts | Arrow Sign | Arrow Direction (dept) | Mounting | Post Included | Shared With Numbers | Full Name | Property Address | Phone | Email | Preferred Contact | In-District Attest | Placement Notes | Est Signs+Hardware $ | Donation Pledged $ | Est Total Due $ | Actual Vendor Total $ (dept) | Order Payment Received $ (dept) | Donation Received $ (dept) | Email Status | Internal Notes
 
-Status values: `New`, `Contacted`, `Ordered`, `Installed`, `Paid`, `On Hold`, `Cancelled`.
+Status values: `New`, `Contacted`, `Ordered`, `Installed`, `On Hold`, `Cancelled` (`Paid` removed — payment now tracked separately).
+Payment Status values: `Unpaid`, `Partial`, `Paid`, `Waived` (server writes `Unpaid` on every new order).
+Payment Type values: `Cash`, `Check`, `Other` (blank until money changes hands).
 
-**Assigned To** is filled by the server at row creation: round-robin over the member list on the Dashboard tab (G4:G50), last-assigned name remembered in Script Properties; empty list ⇒ blank (unassigned). Columns AC–AG (`Contacted On`, `Ordered On`, `Installed On`, `Paid On`, `Days Waiting`) are tracker columns maintained by hand / by formula — they are NOT part of the appendRow contract, which writes exactly A→AB.
+**Assigned To** is filled by the server at row creation: round-robin over the member list on the Dashboard tab (G4:G50), last-assigned name remembered in Script Properties; empty list ⇒ blank (unassigned). Columns AG–AK (`Contacted On`, `Ordered On`, `Installed On`, `Paid On`, `Still Owed $`) are tracker columns maintained by hand / by formula — they are NOT part of the appendRow contract, which writes exactly A→AF. `Days Waiting` (C) is written as a per-row formula by the server after append, not by appendRow itself.
 
 ## 10. Emails
 

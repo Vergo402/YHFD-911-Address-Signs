@@ -213,10 +213,13 @@ You're done. Hand off `RUNBOOK.md` to whoever will process orders day-to-day.
 
 The Orders tracker is built by two functions in `apps-script/Code.gs`; both are safe to re-run:
 
-1. `setupOrderTracker()` — adds the **Assigned To** column, the follow-through date columns, **Days Waiting**, the dropdowns, the row-tint rules, and builds the **Dashboard** tab.
-2. `setupSheetPolish()` — adds the header filter, the **Status** / **Assigned To** slicer buttons, and the member-by-status pivot table on the Dashboard.
+1. `setupOrderTracker()` — adds the **Assigned To** column, the follow-through date columns, **Days Waiting**, the dropdowns, the row-tint rules, and builds the **Dashboard** tab. Payment is tracked separately from pipeline status: **Payment Status** (Unpaid/Partial/Paid/Waived) and **Payment Type** (Cash/Check/Other) are their own chip columns alongside **Status**, so an order's stage and its payment state can be set independently.
+2. `setupSheetPolish()` — adds the header filter, the **Status** / **Assigned To** / **Payment Status** slicer buttons, and the member-by-status pivot table on the Dashboard.
 
 Two finishing touches cannot be scripted (Google exposes them only in the Sheets UI) and are done by hand once:
 
-- **Chip dropdowns + colours** — Data → Data validation → open each rule → set *Display style* to **Chip**, and give each status its colour (New pink, Contacted yellow, Ordered blue, Installed teal, Paid green; On Hold / Cancelled stay grey).
-- **Slicer columns** — after `setupSheetPolish()` inserts the two slicers, double-click each one and pick its column (Status, Assigned To).
+- **Chip dropdowns + colours** — Data → Data validation → open each rule → set *Display style* to **Chip**, and give each of the three chip columns its colours:
+  - **Status**: New pink, Contacted yellow, Ordered blue, Installed teal; On Hold / Cancelled stay grey.
+  - **Payment Status**: Unpaid grey, Partial yellow, Paid green, Waived blue.
+  - **Payment Type**: Cash, Check, Other — no colour convention, chip style only.
+- **Slicer columns** — after `setupSheetPolish()` inserts the three slicers, double-click each one and pick its column (Status, Assigned To, Payment Status).

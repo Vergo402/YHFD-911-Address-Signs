@@ -16,9 +16,22 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 | **Contacted** | You've reached out to the resident. | Call, text, or email the resident (using their **Preferred Contact** column) to: (1) **verify the house number reading** out loud with them — read it back digit by digit; (2) **confirm the exact total due, including shipping**, quoted from the actual vendor shopping cart (the website's estimate does not include shipping); (3) **confirm the mount point is actually at the end of their driveway, where it meets the road** — ask directly whether their mailbox is on their own side at the driveway entrance, because a mailbox across the street or in a shared cluster stand marks the wrong spot and can't be used; if it isn't usable, switch the row to a post and add the post cost before quoting the total; (4) if **Tier Color** says `unsure`, **measure the driveway** and replace `unsure` with `green`, `yellow`, or `red` — the sign has no colour until you do, and if it measures over 1,000 ft, offer the optional blue relay markers (about $34.91 each) while you have them on the phone; (5) if it's a **shared/common driveway**, use the call to gather what you need (which mailbox is whose, layout at the road) and then **the department decides and records** the **Arrow Direction (dept)** column before ordering — this is a department decision, not the resident's call. |
 | **Ordered** | You've placed the individual order with the sign vendor. | Place the order using the **Vendor Order Helper recipe** (Section 3 below) — one order per resident, no bulk ordering. Record the **Actual Vendor Total $ (dept)** column with what you actually paid, including shipping. |
 | **Installed** | The sign(s) have been physically installed. | Confirm installation happened (crew report, photo, or your own visit). |
-| **Paid** | Cash or check has been collected from the resident. | Record the **Donation Received $ (dept)** column with the actual amount collected (may differ from what they pledged online). |
+| **On Hold** | Order is paused for some reason (waiting on the resident, a measurement issue, etc.). | Note why in **Internal Notes**. |
+| **Cancelled** | Order will not be fulfilled. | Note why in **Internal Notes**. |
 
 **Move statuses in order.** Don't skip from `New` straight to `Ordered` — the `Contacted` step is what catches wrong house numbers and missing shipping costs before money is spent.
+
+### When money comes in
+
+Payment is no longer a **Status** — it's tracked in its own columns, separately from where the order is in the pipeline:
+
+- Set **Payment Status** to `Partial` or `Paid` as money comes in.
+- Pick a **Payment Type**: `Cash`, `Check`, or `Other`.
+- Record what the resident actually paid the department in **Order Payment Received $ (dept)** — this can be entered in stages if the resident pays partially.
+- Record any donation actually collected in **Donation Received $ (dept)**, kept separate from the order payment.
+- Date-stamp **Paid On**.
+
+An order can be **Installed** but still **Unpaid** — that's normal and expected. **Still Owed $** (a formula) stays red until the department has been made whole, and **Days Waiting** keeps counting until payment is settled (or the order is Waived or Cancelled).
 
 ---
 
@@ -26,17 +39,22 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 
 Each row is one order. Columns you'll touch most as you work an order:
 
-- **Status** — a coloured chip dropdown; click it and pick the stage. The chip and the row tint change colour to match (pink New → yellow Contacted → blue Ordered → teal Installed → green Paid).
-- **Filter buttons (slicers)** — the two buttons floating above the sheet (Status, Assigned To) filter the whole list with one click. Use them to show just your own open orders; click again and choose "All" to clear.
+- **Status** — a coloured chip dropdown; click it and pick the stage. The chip and the row tint change colour to match (pink New → yellow Contacted → blue Ordered → teal Installed). `On Hold` and `Cancelled` don't carry a row tint.
+- **Payment Status** — a separate coloured chip: grey `Unpaid` → yellow `Partial` → green `Paid` → blue `Waived`. Server sets every new order to `Unpaid`.
+- **Payment Type** — `Cash`, `Check`, or `Other`; blank until money changes hands.
+- **Filter buttons (slicers)** — three buttons floating above the sheet (Status, Assigned To, Payment Status) filter the whole list with one click. Use them to show just your own open orders; click again and choose "All" to clear.
 - **Assigned To** — who owns this order. New orders are assigned automatically, rotating through the member list on the **Dashboard** tab so the work spreads evenly. To join (or add someone to) the rotation, just add the name to the Dashboard's member list — no code, it takes effect on the next order. Reassign any order by picking a different name from the dropdown.
-- **Contacted On / Ordered On / Installed On / Paid On** — date-stamp these as you move the status forward; **Days Waiting** counts up on its own until the order is Paid.
+- **Contacted On / Ordered On / Installed On / Paid On** — date-stamp these as you move the status (or payment) forward.
+- **Days Waiting** (column C) — a formula, don't edit. Counts days since the order came in; shows `-` once Status is `Cancelled` or Payment Status is `Paid`/`Waived`.
 - **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission. **Marker Texts** is empty unless the resident opted into the blue relay markers (offered on the red tier only).
 - **Tier Color** — `green`, `yellow`, or `red`, or **`unsure`** when the resident asked us to measure. An `unsure` row is not orderable: measure the driveway during **Contacted** and overwrite the cell with the real colour first. The Vendor Order Helper will refuse to produce a recipe until you do.
 - **Arrow Direction (dept)** — blank until you set it during the **Contacted** step (only relevant when **Arrow Sign** is checked).
 - **Full Name**, **Property Address**, **Phone**, **Email**, **Preferred Contact** — how to reach the resident.
 - **Est Signs+Hardware $**, **Donation Pledged $**, **Est Total Due $** — what the *website* estimated. These are placeholders, not final — shipping isn't included.
 - **Actual Vendor Total $ (dept)** — you fill this in during **Ordered**.
-- **Donation Received $ (dept)** — you fill this in during **Paid**.
+- **Order Payment Received $ (dept)** — what the resident has actually paid the department for the order; fill in as you collect it (supports partial payments).
+- **Still Owed $** — a formula (Vendor Total − Order Payment Received), don't edit. Shows `-` once Cancelled.
+- **Donation Received $ (dept)** — you fill this in as donations are actually collected, kept separate from the order payment.
 - **Placement Notes** — the resident's own notes about where/how to place the sign(s); the install crew needs this at the **Installed** step.
 - **Internal Notes** — free text for anything unusual. The system itself writes a note here automatically when a 5-digit house number is on a vertical sign (a tight fit) — look out for `⚠ 5-character house number on vertical sign` and double check that sign will actually fit before ordering.
 - **Email Status** — automatic; shows whether the confirmation emails sent successfully. You shouldn't need to touch this.
