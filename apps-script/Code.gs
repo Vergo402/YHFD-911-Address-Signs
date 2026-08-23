@@ -962,7 +962,7 @@ function setupOrderTracker() {
   dash.getRange('A12').setValue('Unassigned open');
   dash.getRange('B12').setFormula('=COUNTIFS(Orders!$D$2:$D,"",Orders!$A$2:$A,"<>",Orders!$C$2:$C,"<>Paid",Orders!$C$2:$C,"<>Cancelled")');
   dash.getRange('A13').setValue('Oldest New order');
-  dash.getRange('B13').setFormula('=IFERROR(INDEX(Orders!$B$2:$B,MATCH(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),Orders!$A$2:$A,0)-1)&" - "&TEXT(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),"m/d"),"none")');
+  dash.getRange('B13').setFormula('=IFERROR(INDEX(Orders!$B$2:$B,MATCH(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),Orders!$A$2:$A,0))&" - "&TEXT(MINIFS(Orders!$A$2:$A,Orders!$C$2:$C,"New"),"m/d"),"none")');
 
   dash.getRange('D3').setValue('Money').setFontWeight('bold');
   dash.getRange('D4').setValue('Vendor cost paid out');
