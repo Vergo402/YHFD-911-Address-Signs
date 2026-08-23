@@ -26,7 +26,8 @@ Every order starts life on the `Orders` tab with **Status = `New`** and moves th
 
 Each row is one order. Columns you'll touch most as you work an order:
 
-- **Status** — a dropdown; set it as you move the order through the stages above. The row tints to match (red New → green Paid).
+- **Status** — a coloured chip dropdown; click it and pick the stage. The chip and the row tint change colour to match (pink New → yellow Contacted → blue Ordered → teal Installed → green Paid).
+- **Filter buttons (slicers)** — the two buttons floating above the sheet (Status, Assigned To) filter the whole list with one click. Use them to show just your own open orders; click again and choose "All" to clear.
 - **Assigned To** — who owns this order. New orders are assigned automatically, rotating through the member list on the **Dashboard** tab so the work spreads evenly. To join (or add someone to) the rotation, just add the name to the Dashboard's member list — no code, it takes effect on the next order. Reassign any order by picking a different name from the dropdown.
 - **Contacted On / Ordered On / Installed On / Paid On** — date-stamp these as you move the status forward; **Days Waiting** counts up on its own until the order is Paid.
 - **House Number**, **Tier Color**, **Orientation**, **Driveway Ft**, **Marker Texts**, **Arrow Sign**, **Mounting**, **Post Included**, **Shared With Numbers** — what to actually order/install. Don't edit these; they're the resident's original submission. **Marker Texts** is empty unless the resident opted into the blue relay markers (offered on the red tier only).

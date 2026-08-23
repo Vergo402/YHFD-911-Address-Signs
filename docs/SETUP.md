@@ -205,3 +205,18 @@ If that email arrives, you are done. Tell whoever watches the department inbox
 what it is, and that its absence is the alarm.
 
 You're done. Hand off `RUNBOOK.md` to whoever will process orders day-to-day.
+
+
+---
+
+## Appendix — Sheet tracker setup (developer, one time)
+
+The Orders tracker is built by two functions in `apps-script/Code.gs`; both are safe to re-run:
+
+1. `setupOrderTracker()` — adds the **Assigned To** column, the follow-through date columns, **Days Waiting**, the dropdowns, the row-tint rules, and builds the **Dashboard** tab.
+2. `setupSheetPolish()` — adds the header filter, the **Status** / **Assigned To** slicer buttons, and the member-by-status pivot table on the Dashboard.
+
+Two finishing touches cannot be scripted (Google exposes them only in the Sheets UI) and are done by hand once:
+
+- **Chip dropdowns + colours** — Data → Data validation → open each rule → set *Display style* to **Chip**, and give each status its colour (New pink, Contacted yellow, Ordered blue, Installed teal, Paid green; On Hold / Cancelled stay grey).
+- **Slicer columns** — after `setupSheetPolish()` inserts the two slicers, double-click each one and pick its column (Status, Assigned To).
